@@ -1266,6 +1266,14 @@ function resizeCanvas() {
 window.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.Left = true;
     if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.Right = true;
+    
+    // Space or 'P' to toggle pause
+    if (e.key === ' ' || e.key === 'p' || e.key === 'P') {
+        if (gameState === 'playing' || gameState === 'paused') {
+            e.preventDefault(); // Prevent page scrolling down on Space
+            togglePause();
+        }
+    }
 });
 
 window.addEventListener('keyup', (e) => {
@@ -1290,14 +1298,14 @@ function handleControlEnd() {
 }
 
 window.addEventListener('mousedown', (e) => {
-    // Don't trigger movement if clicking HUD buttons (mute, start buttons)
-    if (e.target.closest('#sound-toggle') || e.target.closest('.action-btn')) return;
+    // Don't trigger movement if clicking HUD buttons (mute, pause, start buttons)
+    if (e.target.closest('.hud-controls') || e.target.closest('.action-btn')) return;
     handleControlStart(e.clientX);
 });
 window.addEventListener('mouseup', handleControlEnd);
 
 window.addEventListener('touchstart', (e) => {
-    if (e.target.closest('#sound-toggle') || e.target.closest('.action-btn')) return;
+    if (e.target.closest('.hud-controls') || e.target.closest('.action-btn')) return;
     // Prevent default scroll behaviors
     e.preventDefault();
     handleControlStart(e.touches[0].clientX);
@@ -1326,9 +1334,64 @@ document.getElementById('restart-btn').addEventListener('click', () => {
     gameState = 'playing';
 });
 
-document.getElementById('sound-toggle').addEventListener('click', () => {
+// Pause Logic Functions
+function pauseGame() {
+    if (gameState !== 'playing') return;
+    gameState = 'paused';
+    document.getElementById('pause-screen').classList.remove('hidden');
+    
+    // Change pause toggle icon to play icon
+    document.getElementById('pause-icon').setAttribute('d', 'M8,5.14V19.14L19,12.14L8,5.14Z');
+}
+
+function resumeGame() {
+    if (gameState !== 'paused') return;
+    gameState = 'playing';
+    document.getElementById('pause-screen').classList.add('hidden');
+    
+    // Change pause toggle icon to pause icon
+    document.getElementById('pause-icon').setAttribute('d', 'M14,19H18V5H14M6,19H10V5H6V19Z');
+    
+    // Reset lastTime to avoid huge dt spike
+    lastTime = performance.now();
+}
+
+function togglePause() {
+    if (gameState === 'playing') {
+        pauseGame();
+    } else if (gameState === 'paused') {
+        resumeGame();
+    }
+}
+
+// UI Controls
+document.getElementById('sound-toggle').addEventListener('click', (e) => {
+    e.stopPropagation();
     soundManager.init();
     soundManager.toggleMute();
+});
+
+document.getElementById('pause-toggle').addEventListener('click', (e) => {
+    e.stopPropagation();
+    soundManager.init();
+    togglePause();
+});
+
+document.getElementById('resume-btn').addEventListener('click', () => {
+    resumeGame();
+});
+
+// Auto pause on focus loss or visibility change
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden && gameState === 'playing') {
+        pauseGame();
+    }
+});
+
+window.addEventListener('blur', () => {
+    if (gameState === 'playing') {
+        pauseGame();
+    }
 });
 
 // Start engine

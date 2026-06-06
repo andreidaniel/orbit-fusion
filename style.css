@@ -233,6 +233,39 @@ html, body {
     transform: scale(0.95);
 }
 
+/* HUD Controls Group */
+.hud-controls {
+    display: flex;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+.pause-toggle-btn {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glow);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease;
+}
+
+.pause-toggle-btn:hover {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.pause-toggle-btn:active {
+    transform: scale(0.95);
+}
+
 /* ==========================================================================
    Overlay Panels (Start & Game Over Screens)
    ========================================================================== */
@@ -247,12 +280,14 @@ html, body {
     justify-content: center;
     align-items: center;
     z-index: 20;
-    background: rgba(5, 5, 8, 0.45);
-    transition: opacity 0.5s ease, visibility 0.5s ease;
+    background: rgba(5, 5, 8, 0.55);
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    overflow-y: auto; /* Permite scroll-ul dacă ecranul este mic pe verticală */
+    padding: 20px 10px;
 }
 
 .glass-panel {
-    width: 90%;
+    width: 100%;
     max-width: 440px;
     background: var(--panel-bg);
     backdrop-filter: blur(20px);
@@ -268,6 +303,7 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: auto; /* Aliniază pe centru în mod flexibil pe verticală */
 }
 
 .overlay.hidden {
@@ -705,48 +741,127 @@ html, body {
         left: 10px;
         right: 10px;
         gap: 6px;
+        flex-wrap: nowrap; /* Keep HUD on one line, use flexible sizing */
     }
     
     .hud-item {
-        padding: 8px 12px;
+        padding: 6px 8px;
         border-radius: 8px;
+        flex: 1;
+        min-width: 0; /* Let it shrink on narrow screens */
     }
     
-    .hud-label {
-        font-size: 0.55rem;
-    }
-    
-    .hud-value {
-        font-size: 1.1rem;
+    .score-container {
+        min-width: 65px;
     }
     
     .level-container {
-        width: 120px;
+        flex: 1.2;
     }
     
     .stability-container {
-        width: 110px;
+        flex: 1.2;
     }
     
-    .sound-toggle-btn {
-        padding: 8px;
+    .hud-label {
+        font-size: 0.5rem;
+        letter-spacing: 0.5px;
+        margin-bottom: 0px;
+    }
+    
+    .hud-value {
+        font-size: 0.95rem;
+    }
+
+    .stability-header {
+        flex-direction: column; /* Stack label and value vertically on mobile */
+        align-items: flex-start;
+        gap: 0px;
+    }
+    
+    .level-badge {
+        flex-direction: column; /* Stack label and value vertically on mobile */
+        align-items: flex-start;
+        gap: 0px;
+    }
+    
+    .xp-bar-container {
+        height: 3px;
+        margin-top: 3px;
+    }
+    
+    .stability-bar-container {
+        height: 4px;
+        margin-top: 3px;
+    }
+    
+    .hud-controls {
+        gap: 4px;
+    }
+    
+    .sound-toggle-btn, .pause-toggle-btn {
+        padding: 7px;
         border-radius: 8px;
     }
     
     .glass-panel {
-        padding: 30px 20px;
+        padding: 24px 16px;
+        border-radius: 20px;
     }
     
     .game-title {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+        letter-spacing: 2px;
     }
     
-    .control-guides {
-        flex-direction: column;
+    .game-tagline {
+        font-size: 0.8rem;
+        margin-bottom: 16px;
+    }
+    
+    .tutorial-box {
+        padding: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .step-item {
+        padding: 6px 10px;
         gap: 8px;
     }
     
-    .guide-item {
+    .step-num {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+    }
+    
+    .step-item p {
+        font-size: 0.7rem;
+    }
+    
+    .control-guides {
+        display: none; /* Ascundem butoanele de control desktop pe mobil */
+    }
+    
+    .action-btn {
+        padding: 12px 24px;
+        font-size: 0.9rem;
+    }
+    
+    .stats-box {
+        margin-bottom: 16px;
+    }
+    
+    .best-score-val {
+        font-size: 1.4rem;
+    }
+    
+    .history-box {
         padding: 8px;
+        margin-bottom: 16px;
+    }
+    
+    .history-item {
+        font-size: 0.7rem;
     }
 }
