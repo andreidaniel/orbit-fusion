@@ -560,6 +560,40 @@ function checkCollisions() {
             orbs.splice(i, 1);
         }
     }
+    realignOrbColors();
+}
+
+function realignOrbColors() {
+    if (orbs.length === 0) return;
+    
+    // Obținem culorile unice prezente pe segmente (excluzând Supernova, index 5, care este temporară)
+    const activeColors = [...new Set(segments.map(s => s.colorIndex).filter(c => c < COLORS.length - 1))];
+    const usableColors = activeColors.length > 0 ? activeColors : [0];
+
+    orbs.forEach(orb => {
+        if (!usableColors.includes(orb.colorIndex)) {
+            const oldColorIndex = orb.colorIndex;
+            // Selectăm o nouă culoare din cele active curent pe hexagon
+            const newColorIndex = usableColors[Math.floor(Math.random() * usableColors.length)];
+            orb.colorIndex = newColorIndex;
+            
+            // Generăm particule vizuale cu noua culoare la poziția orbului
+            for (let k = 0; k < 8; k++) {
+                const angle = Math.random() * Math.PI * 2;
+                const sp = 20 + Math.random() * 50;
+                particles.push(new Particle(
+                    orb.x, 
+                    orb.y, 
+                    Math.cos(angle) * sp, 
+                    Math.sin(angle) * sp, 
+                    COLORS[newColorIndex].hex, 
+                    0.8, 
+                    3,
+                    1.2
+                ));
+            }
+        }
+    });
 }
 
 function handleOrbImpact(orb, segIdx, orbIdx) {
