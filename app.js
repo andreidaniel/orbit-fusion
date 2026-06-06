@@ -467,7 +467,7 @@ class FloatingText {
         ctx.save();
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
-        ctx.font = 'bold 16px "Space Grotesk"';
+        ctx.font = 'bold 16px "Inter"';
         ctx.textAlign = 'center';
         ctx.fillText(this.text, this.x, this.y);
         ctx.restore();
@@ -730,12 +730,12 @@ function checkFusions(originIdx) {
 function triggerNovaBlast(segIdx) {
     // Nova blast clears all active orbs on the screen and heals core
     soundManager.playFusion();
-    shockwaves.push(new Shockwave(0, 0, window.innerWidth / 2, '#ffffff'));
+    shockwaves.push(new Shockwave(0, 0, window.innerWidth / 2, currentTheme === 'light' ? '#8800cc' : '#ffffff'));
     
     orbs.forEach(orb => {
         // Turn each cleared orb into floating scores
         score += 15 * level;
-        floatingTexts.push(new FloatingText(orb.x, orb.y, "+15", '#ffffff'));
+        floatingTexts.push(new FloatingText(orb.x, orb.y, "+15", currentTheme === 'light' ? '#1c1c24' : '#ffffff'));
         
         for (let k = 0; k < 8; k++) {
             particles.push(new Particle(
@@ -788,7 +788,7 @@ function levelUp() {
     stability = Math.min(100, stability + 25);
     
     // Set game state briefly to clear screen
-    shockwaves.push(new Shockwave(0, 0, window.innerWidth / 1.5, '#ff007f'));
+    shockwaves.push(new Shockwave(0, 0, window.innerWidth / 1.5, COLORS[1].hex));
     orbs = []; // Clear current enemies
     
     // Display LEVEL UP banner overlay
@@ -813,7 +813,7 @@ function levelUp() {
             0, 0, 
             Math.cos(angle) * sp, 
             Math.sin(angle) * sp, 
-            '#ff007f', 
+            COLORS[1].hex, 
             1.0, 
             4, 
             0.5
@@ -833,7 +833,7 @@ function createCoreDamageParticles() {
             0, 0, 
             Math.cos(angle) * sp, 
             Math.sin(angle) * sp, 
-            '#ffdd00', 
+            COLORS[2].hex, 
             0.9, 
             3, 
             1.5
