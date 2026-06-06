@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Orbit Fusion - Cosmic Arcade Puzzle</title>
+    <!-- Google Fonts: Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // Căutător global de erori pentru afișarea excepțiilor direct pe ecran (ajută la diagnosticare)
+        window.onerror = function(message, source, lineno, colno, error) {
+            const errDiv = document.createElement('div');
+            errDiv.style.position = 'fixed';
+            errDiv.style.top = '0';
+            errDiv.style.left = '0';
+            errDiv.style.width = '100%';
+            errDiv.style.background = 'rgba(220, 20, 60, 0.95)';
+            errDiv.style.color = 'white';
+            errDiv.style.padding = '15px';
+            errDiv.style.zIndex = '99999';
+            errDiv.style.fontFamily = 'monospace';
+            errDiv.style.fontSize = '12px';
+            errDiv.style.whiteSpace = 'pre-wrap';
+            errDiv.style.boxShadow = '0 5px 15px rgba(0,0,0,0.5)';
+            errDiv.innerText = 'EROARE LOGICĂ JOC:\n' + message + '\n\nFișier: ' + source + '\nLinia: ' + lineno + ':' + colno + '\nStack: ' + (error ? error.stack : 'N/A');
+            document.body.appendChild(errDiv);
+            return false;
+        };
+    </script>
+</head>
+<body>
+    <div id="game-container">
+        <!-- The main canvas where the game is rendered -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- HUD: Displays during gameplay -->
+        <div id="hud" class="hidden">
+            <div class="hud-item score-container">
+                <span class="hud-label">SCOR</span>
+                <span id="score-val" class="hud-value neon-cyan">0</span>
+                <span id="combo-badge" class="combo-badge hidden">x1</span>
+            </div>
+            
+            <div class="hud-item level-container">
+                <div class="level-badge">
+                    <span class="hud-label">NIVEL</span>
+                    <span id="level-val" class="hud-value neon-magenta">1</span>
+                </div>
+                <div class="xp-bar-container">
+                    <div id="xp-bar-fill" class="xp-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="hud-item stability-container">
+                <div class="stability-header">
+                    <span class="hud-label">STABILITATE</span>
+                    <span id="stability-val" class="hud-value neon-yellow">100%</span>
+                </div>
+                <div class="stability-bar-container">
+                    <div id="stability-bar-fill" class="stability-bar-fill"></div>
+                </div>
+            </div>
+            
+            <button id="sound-toggle" class="sound-toggle-btn" aria-label="Mute sound">
+                <svg id="sound-icon" viewBox="0 0 24 24" width="24" height="24">
+                    <!-- Volume High Icon -->
+                    <path fill="currentColor" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18.07,19.86 21,16.28 21,12C21,7.72 18.07,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.77 16.5,12M3,9V15H7L12,20V4L7,9H3Z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Overlays -->
+        
+        <!-- 1. Start Screen -->
+        <div id="start-screen" class="overlay">
+            <div class="glass-panel">
+                <h1 class="game-title neon-text">ORBIT <span class="accent-text">FUSION</span></h1>
+                <p class="game-tagline">Roteste hexagonul. Potrivește culorile. Fuzionează energia.</p>
+                
+                <div class="tutorial-box">
+                    <h3>Instrucțiuni de Joc:</h3>
+                    <div class="steps-list">
+                        <div class="step-item">
+                            <span class="step-num step-1">1</span>
+                            <p>Sferele energetice cad spre nucleul gravitațional central.</p>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num step-2">2</span>
+                            <p>Rotește hexagonul pentru a intercepta sferele cu un <strong>scut de plasmă</strong> de aceeași culoare.</p>
+                        </div>
+                        <div class="step-item">
+                            <span class="step-num step-3">3</span>
+                            <p>Două <strong>scuturi de plasmă</strong> adiacente de aceeași culoare vor fuziona într-un scut superior.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="control-guides">
+                        <div class="guide-item">
+                            <span class="key-badge">A</span> / <span class="key-badge">D</span> sau <span class="key-badge">◀</span> / <span class="key-badge">▶</span>
+                            <p>Control Desktop</p>
+                        </div>
+                        <div class="guide-item">
+                            <span class="touch-icon">📱</span>
+                            <p>Atinge Stânga / Dreapta pe Mobil</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-box">
+                    <span class="best-score-label">BEST SCORE</span>
+                    <span id="best-score-val" class="best-score-val neon-cyan">0</span>
+                </div>
+
+                <div id="history-box" class="history-box hidden">
+                    <h3>Istoric Misiuni:</h3>
+                    <div id="history-list" class="history-list">
+                        <!-- Dynamic items loaded from JS -->
+                    </div>
+                </div>
+                
+                <button id="start-btn" class="action-btn">START MISIUNE</button>
+            </div>
+        </div>
+
+        <!-- 2. Game Over Screen -->
+        <div id="game-over-screen" class="overlay hidden">
+            <div class="glass-panel">
+                <h2 class="game-over-title neon-red-text">NUCLEU IMPLODAT</h2>
+                <p class="game-over-subtitle">Stabilitatea a ajuns la 0%</p>
+                
+                <div class="game-over-stats">
+                    <div class="go-stat-item">
+                        <span class="go-stat-label">SCOR FINAL</span>
+                        <span id="go-score" class="go-stat-value neon-cyan">0</span>
+                    </div>
+                    <div class="go-stat-item">
+                        <span class="go-stat-label">NIVEL ATINS</span>
+                        <span id="go-level" class="go-stat-value neon-magenta">1</span>
+                    </div>
+                </div>
+
+                <div id="new-high-score-badge" class="high-score-badge hidden">NOU RECORD!</div>
+
+                <button id="restart-btn" class="action-btn restart-btn">REÎNCEARCĂ</button>
+            </div>
+        </div>
+
+        <!-- Float Notification Level Up (dynamic overlay) -->
+        <div id="level-up-banner" class="level-up-banner hidden">
+            <div class="level-up-content">
+                <h2 class="neon-text-magenta">LEVEL UP!</h2>
+                <p id="level-up-text">NIVELUL 2</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
