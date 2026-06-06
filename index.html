@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.1">
+    <link rel="stylesheet" href="style.css?v=1.3">
     <script>
         // Căutător global de erori pentru afișarea excepțiilor direct pe ecran (ajută la diagnosticare)
         window.onerror = function(message, source, lineno, colno, error) {
@@ -65,6 +65,11 @@
             </div>
             
             <div class="hud-controls">
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Schimbă tema (Light/Dark)">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path id="theme-icon" fill="currentColor" d="M12,18C11.11,18 10.26,17.8 9.5,17.45C11.56,16.5 13,14.42 13,12C13,9.58 11.56,7.5 9.5,6.55C10.26,6.2 11.11,6 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31L23.31,12L20,8.69Z" />
+                    </svg>
+                </button>
                 <button id="pause-toggle" class="pause-toggle-btn" aria-label="Pauză joc">
                     <svg viewBox="0 0 24 24" width="24" height="24">
                         <path id="pause-icon" fill="currentColor" d="M14,19H18V5H14M6,19H10V5H6V19Z" />
@@ -104,15 +109,8 @@
                         </div>
                     </div>
                     
-                    <div class="control-guides">
-                        <div class="guide-item">
-                            <span class="key-badge">A</span> / <span class="key-badge">D</span> sau <span class="key-badge">◀</span> / <span class="key-badge">▶</span>
-                            <p>Control Desktop</p>
-                        </div>
-                        <div class="guide-item">
-                            <span class="touch-icon">📱</span>
-                            <p>Atinge Stânga / Dreapta pe Mobil</p>
-                        </div>
+                    <div class="control-tip">
+                        <p>🎮 <strong>Control:</strong> Tastele <strong>A / D</strong> (sau <strong>◀ / ▶</strong>) pe tastatură / Atinge <strong>Stânga / Dreapta</strong> pe ecranul telefonului.</p>
                     </div>
                 </div>
                 
@@ -160,6 +158,11 @@
             <div class="glass-panel">
                 <h2 class="game-title neon-text">JOC PAUZAT</h2>
                 <p class="game-tagline">Misiunea este suspendată.</p>
+                
+                <div class="control-tip pause-guide">
+                    <p>🔄 <strong>Rotire:</strong> Tastele <strong>A / D</strong> (sau <strong>◀ / ▶</strong>) / Atinge <strong>Stânga / Dreapta</strong> pe ecran.</p>
+                </div>
+                
                 <button id="resume-btn" class="action-btn">CONTINUĂ</button>
             </div>
         </div>
@@ -173,6 +176,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=1.1"></script>
+    <script src="app.js?v=1.3"></script>
 </body>
 </html>

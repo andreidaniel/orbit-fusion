@@ -7,14 +7,68 @@
 // 1. CONSTANTS & SYSTEM CONFIGURATION
 // ==========================================================================
 
-const COLORS = [
-    { name: 'Plasmă Cyan', hex: '#00f0ff', glow: 'rgba(0, 240, 255, 0.6)' },      // Level 1
-    { name: 'Impuls Neon', hex: '#ff007f', glow: 'rgba(255, 0, 127, 0.6)' },      // Level 2
-    { name: 'Frecvență Solară', hex: '#ffdd00', glow: 'rgba(255, 221, 0, 0.6)' }, // Level 3
-    { name: 'Aură Cuantică', hex: '#00ff66', glow: 'rgba(0, 255, 102, 0.6)' },     // Level 4
-    { name: 'Flux Gravitațional', hex: '#aa00ff', glow: 'rgba(170, 0, 255, 0.6)' },// Level 5
-    { name: 'Nucleu Supernovă', hex: '#ffffff', glow: 'rgba(255, 255, 255, 0.8)' } // Level 6 (Special)
-];
+const PALETTES = {
+    dark: [
+        { name: 'Plasmă Cyan', hex: '#00f0ff', glow: 'rgba(0, 240, 255, 0.6)' },      // Level 1
+        { name: 'Impuls Neon', hex: '#ff007f', glow: 'rgba(255, 0, 127, 0.6)' },      // Level 2
+        { name: 'Frecvență Solară', hex: '#ffdd00', glow: 'rgba(255, 221, 0, 0.6)' }, // Level 3
+        { name: 'Aură Cuantică', hex: '#00ff66', glow: 'rgba(0, 255, 102, 0.6)' },     // Level 4
+        { name: 'Flux Gravitațional', hex: '#aa00ff', glow: 'rgba(170, 0, 255, 0.6)' },// Level 5
+        { name: 'Nucleu Supernovă', hex: '#ffffff', glow: 'rgba(255, 255, 255, 0.8)' } // Level 6 (Special)
+    ],
+    light: [
+        { name: 'Plasmă Cyan', hex: '#00a3cc', glow: 'rgba(0, 163, 204, 0.5)' },      // Level 1 (Contrast mărit pe fundal deschis)
+        { name: 'Impuls Neon', hex: '#d9006c', glow: 'rgba(217, 0, 108, 0.5)' },      // Level 2
+        { name: 'Frecvență Solară', hex: '#cda100', glow: 'rgba(205, 161, 0, 0.5)' },  // Level 3
+        { name: 'Aură Cuantică', hex: '#00a33c', glow: 'rgba(0, 163, 60, 0.5)' },      // Level 4
+        { name: 'Flux Gravitațional', hex: '#8800cc', glow: 'rgba(136, 0, 204, 0.5)' },// Level 5
+        { name: 'Nucleu Supernovă', hex: '#1c1c24', glow: 'rgba(28, 28, 36, 0.4)' }    // Level 6 (Special - nucleu întunecat)
+    ]
+};
+
+let COLORS = PALETTES.dark; // Va deține paleta activă în funcție de temă
+let currentTheme = 'dark';
+
+let themeStyles = {
+    gridColor: 'rgba(255, 255, 255, 0.035)',
+    coreFill: '#010103',
+    coreStroke: '#4b0082',
+    canvasBg: 'rgba(5, 5, 8, 0.3)',
+    starColor: '#ffffff'
+};
+
+function applyTheme(themeName) {
+    currentTheme = themeName;
+    const icon = document.getElementById('theme-icon');
+    if (themeName === 'light') {
+        COLORS = PALETTES.light;
+        themeStyles.gridColor = 'rgba(0, 0, 0, 0.04)';
+        themeStyles.coreFill = '#fdfdfd';
+        themeStyles.coreStroke = '#aa00ff';
+        themeStyles.canvasBg = 'rgba(244, 245, 248, 0.35)';
+        themeStyles.starColor = 'rgba(0, 0, 0, 0.2)'; // Scântei întunecate, fine
+        document.body.classList.add('light-theme');
+        if (icon) {
+            // Crescent Moon SVG path (pentru comutarea înapoi în modul întunecat)
+            icon.setAttribute('d', 'M12.1,22C6.5,22 2,17.5 2,11.9C2,7.4 5,3.5 9.2,2.2C9.8,2 10.4,2.4 10.5,3C10.6,3.6 10.2,4.2 9.6,4.3C6.4,5 4,7.8 4,11.9C4,16.4 7.6,20 12.1,20C16.2,20 19,17.6 19.7,14.4C19.8,13.8 20.4,13.4 21,13.5C21.6,13.6 22,14.2 21.8,14.8C20.5,19 16.6,22 12.1,22Z');
+        }
+    } else {
+        COLORS = PALETTES.dark;
+        themeStyles.gridColor = 'rgba(255, 255, 255, 0.035)';
+        themeStyles.coreFill = '#010103';
+        themeStyles.coreStroke = '#4b0082';
+        themeStyles.canvasBg = 'rgba(5, 5, 8, 0.3)';
+        themeStyles.starColor = '#ffffff';
+        document.body.classList.remove('light-theme');
+        if (icon) {
+            // Sun SVG path (pentru comutarea în modul deschis)
+            icon.setAttribute('d', 'M12,18C11.11,18 10.26,17.8 9.5,17.45C11.56,16.5 13,14.42 13,12C13,9.58 11.56,7.5 9.5,6.55C10.26,6.2 11.11,6 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31L23.31,12L20,8.69Z');
+        }
+    }
+    // Re-inițializăm particulele pe noul fundal
+    if (typeof initStars === 'function') initStars();
+    if (typeof initNebulae === 'function') initNebulae();
+}
 
 const STABILITY_CRITICAL_THRESHOLD = 30; // Under 30% health, the bar animations change to red/alert
 const BASE_ORB_SPEED = 160;             // Base pixels per second (up from 110 for better pace)
@@ -206,12 +260,13 @@ function initStars() {
 
 function initNebulae() {
     const size = Math.min(window.innerWidth, window.innerHeight);
+    const isLight = currentTheme === 'light';
     nebulae = [
         {
             x: -window.innerWidth * 0.25,
             y: -window.innerHeight * 0.2,
             radius: size * 0.55,
-            color: 'rgba(0, 240, 255, 0.04)',
+            color: isLight ? 'rgba(0, 163, 204, 0.06)' : 'rgba(0, 240, 255, 0.04)',
             phase: 0,
             speed: 0.03
         },
@@ -219,7 +274,7 @@ function initNebulae() {
             x: window.innerWidth * 0.25,
             y: window.innerHeight * 0.2,
             radius: size * 0.65,
-            color: 'rgba(255, 0, 127, 0.04)',
+            color: isLight ? 'rgba(217, 0, 108, 0.06)' : 'rgba(255, 0, 127, 0.04)',
             phase: Math.PI,
             speed: 0.025
         }
@@ -253,7 +308,7 @@ function drawBackground() {
         
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = themeStyles.starColor;
         ctx.fill();
     });
     ctx.restore();
@@ -833,7 +888,7 @@ function spawnOrb() {
 
 function drawGrid() {
     ctx.save();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.035)';
+    ctx.strokeStyle = themeStyles.gridColor;
     ctx.lineWidth = 1;
     
     const gridSize = 60;
@@ -895,8 +950,8 @@ function drawCore() {
 
     // Outer gravity glow
     const outerGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 60 * pulseFactor);
-    outerGrad.addColorStop(0, 'rgba(15, 10, 30, 0.6)');
-    outerGrad.addColorStop(0.5, 'rgba(10, 0, 20, 0.2)');
+    outerGrad.addColorStop(0, currentTheme === 'light' ? 'rgba(170, 0, 255, 0.15)' : 'rgba(15, 10, 30, 0.6)');
+    outerGrad.addColorStop(0.5, currentTheme === 'light' ? 'rgba(170, 0, 255, 0.05)' : 'rgba(10, 0, 20, 0.2)');
     outerGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctx.fillStyle = outerGrad;
     ctx.beginPath();
@@ -906,12 +961,12 @@ function drawCore() {
     // Dark core void (Singularity effect)
     ctx.beginPath();
     ctx.arc(0, 0, coreRadius, 0, Math.PI * 2);
-    ctx.fillStyle = '#010103';
+    ctx.fillStyle = themeStyles.coreFill;
     ctx.shadowBlur = 15;
-    ctx.shadowColor = '#8000ff';
+    ctx.shadowColor = COLORS[4].hex;
     ctx.fill();
     ctx.lineWidth = 2;
-    ctx.strokeStyle = '#4b0082';
+    ctx.strokeStyle = themeStyles.coreStroke;
     ctx.stroke();
 
     ctx.restore();
@@ -1182,7 +1237,7 @@ function update(dt) {
 function draw() {
     // Clear viewport with a slight trailing opacity for canvas glowing particles
     ctx.save();
-    ctx.fillStyle = 'rgba(5, 5, 8, 0.3)';
+    ctx.fillStyle = themeStyles.canvasBg;
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
     ctx.restore();
 
@@ -1381,6 +1436,18 @@ document.getElementById('resume-btn').addEventListener('click', () => {
     resumeGame();
 });
 
+document.getElementById('theme-toggle').addEventListener('click', (e) => {
+    e.stopPropagation();
+    soundManager.init();
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(nextTheme);
+    try {
+        localStorage.setItem('orbit_fusion_theme', nextTheme);
+    } catch (err) {
+        console.warn("Could not save theme to localStorage", err);
+    }
+});
+
 // Auto pause on focus loss or visibility change
 document.addEventListener('visibilitychange', () => {
     if (document.hidden && gameState === 'playing') {
@@ -1404,6 +1471,15 @@ gameState = 'start';
 
 // Load and render history UI
 updateHistoryUI();
+
+// Detect and apply theme (respects prefers-color-scheme by default)
+let savedTheme = 'dark';
+try {
+    savedTheme = localStorage.getItem('orbit_fusion_theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+} catch (e) {
+    savedTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+}
+applyTheme(savedTheme);
 
 // Set initial highscore on startup screen
 document.getElementById('best-score-val').innerText = highScore;

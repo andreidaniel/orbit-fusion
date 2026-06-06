@@ -266,6 +266,32 @@ html, body {
     transform: scale(0.95);
 }
 
+.theme-toggle-btn {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glow);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.95);
+}
+
 /* ==========================================================================
    Overlay Panels (Start & Game Over Screens)
    ========================================================================== */
@@ -417,48 +443,30 @@ html, body {
     color: rgba(255, 255, 255, 0.85);
 }
 
-.control-guides {
-    display: flex;
-    justify-content: space-around;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.guide-item {
-    flex: 1;
+.control-tip {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px 16px;
+    width: 100%;
+    margin-bottom: 20px;
     text-align: center;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.02);
 }
 
-.key-badge {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-size: 0.75rem;
-    font-family: monospace;
-    font-weight: bold;
-    color: var(--cyan);
-}
-
-.guide-item p {
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.5);
-    margin-top: 6px;
-}
-
-.touch-icon {
-    font-size: 1.1rem;
-}
-
-.tutorial-text {
-    font-size: 0.75rem;
+.control-tip p {
+    font-size: 0.8rem;
     line-height: 1.4;
-    color: rgba(255, 255, 255, 0.7);
-    text-align: center;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.control-tip strong {
+    color: var(--cyan);
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+}
+
+.pause-guide {
+    margin-top: 10px;
+    margin-bottom: 24px;
 }
 
 /* Best Score UI */
@@ -799,7 +807,7 @@ html, body {
         gap: 4px;
     }
     
-    .sound-toggle-btn, .pause-toggle-btn {
+    .sound-toggle-btn, .pause-toggle-btn, .theme-toggle-btn {
         padding: 7px;
         border-radius: 8px;
     }
@@ -839,8 +847,13 @@ html, body {
         font-size: 0.7rem;
     }
     
-    .control-guides {
-        display: none; /* Ascundem butoanele de control desktop pe mobil */
+    .control-tip {
+        padding: 8px 12px;
+        margin-bottom: 16px;
+    }
+    
+    .control-tip p {
+        font-size: 0.7rem;
     }
     
     .action-btn {
@@ -865,3 +878,105 @@ html, body {
         font-size: 0.7rem;
     }
 }
+
+/* ==========================================================================
+   Sistem Teme: LIGHT THEME Overrides
+   ========================================================================== */
+
+body.light-theme {
+    --bg-color: #eef1f6;
+    --panel-bg: rgba(244, 244, 250, 0.75);
+    --border-glow: rgba(0, 0, 0, 0.06);
+    color: #1a1a24;
+}
+
+body.light-theme #game-container {
+    background: radial-gradient(circle at center, #e2e8f4 0%, #cbd5e8 100%);
+}
+
+body.light-theme .hud-item {
+    color: #1c1c24;
+    border-color: rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+body.light-theme .hud-label {
+    color: rgba(0, 0, 0, 0.45);
+}
+
+body.light-theme .glass-panel {
+    color: #1a1b22;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+body.light-theme .game-title {
+    color: #1a1b22;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.02);
+}
+
+body.light-theme .game-tagline {
+    color: rgba(0, 0, 0, 0.55);
+}
+
+body.light-theme .tutorial-box {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.04);
+}
+
+body.light-theme .step-item {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.02);
+}
+
+body.light-theme .step-item p {
+    color: #22232a;
+}
+
+body.light-theme .control-tip {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.04);
+}
+
+body.light-theme .control-tip p {
+    color: #22232a;
+}
+
+body.light-theme .best-score-label {
+    color: rgba(0, 0, 0, 0.45);
+}
+
+body.light-theme .history-box {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.04);
+}
+
+body.light-theme .hist-date {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+body.light-theme .hist-level {
+    color: #22232a;
+}
+
+body.light-theme .sound-toggle-btn,
+body.light-theme .pause-toggle-btn,
+body.light-theme .theme-toggle-btn {
+    color: rgba(0, 0, 0, 0.6);
+    border-color: rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+body.light-theme .sound-toggle-btn:hover,
+body.light-theme .pause-toggle-btn:hover,
+body.light-theme .theme-toggle-btn:hover {
+    color: #000000;
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+body.light-theme .xp-bar-container,
+body.light-theme .stability-bar-container {
+    background: rgba(0, 0, 0, 0.08);
+}
+
