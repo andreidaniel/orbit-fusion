@@ -846,7 +846,7 @@ function createCoreDamageParticles() {
 // ==========================================================================
 
 function spawnOrb() {
-    if (gameState !== 'playing') return;
+    if (gameState !== 'playing' && gameState !== 'start') return;
 
     // Angle of spawn (from outside the screen)
     const angle = Math.random() * Math.PI * 2;
@@ -857,27 +857,22 @@ function spawnOrb() {
     // Orb Speed increases with Level
     const orbSpeed = BASE_ORB_SPEED * (1 + level * 0.08);
 
-    // Smart color selection: prioritizes colors already present on the hexagon
-    // to ensure the puzzle is solvable and balanced
+    // Smart color selection: ONLY spawn colors currently present on the hexagon's segments
+    // to guarantee the puzzle is 100% solvable and fair.
     let colorIndex = 0;
-    const randomChance = Math.random();
+    const activeColors = [...new Set(segments.map(s => s.colorIndex).filter(c => c < COLORS.length - 1))];
+    const usableColors = activeColors.length > 0 ? activeColors : [0];
     
-    if (randomChance < 0.65) {
-        // 65% chance: Pick a color that is currently present on the segments
-        const activeColors = segments.map(s => s.colorIndex).filter(c => c < COLORS.length - 1);
-        if (activeColors.length > 0) {
-            colorIndex = activeColors[Math.floor(Math.random() * activeColors.length)];
-        } else {
-            colorIndex = 0;
+    // We add a weight bias so that lower-level colors spawn more frequently than higher-level ones,
+    // which makes the difficulty progression feel balanced and natural.
+    const weightedPool = [];
+    usableColors.forEach(c => {
+        const weight = 6 - c; // e.g. Cyan (0) gets weight 6, Purple (4) gets weight 2
+        for (let i = 0; i < weight; i++) {
+            weightedPool.push(c);
         }
-    } else if (randomChance < 0.9) {
-        // 25% chance: Spawn base Level 1 (Cyan) to build matching stacks
-        colorIndex = 0;
-    } else {
-        // 10% chance: Spawn a slightly higher level orb directly (based on level)
-        const maxSpawnLevel = Math.min(3, Math.floor(level / 2) + 1);
-        colorIndex = Math.floor(Math.random() * maxSpawnLevel);
-    }
+    });
+    colorIndex = weightedPool[Math.floor(Math.random() * weightedPool.length)];
 
     orbs.push(new Orb(startX, startY, colorIndex, orbSpeed));
 }
