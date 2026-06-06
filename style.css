@@ -1092,3 +1092,23 @@ body.light-theme .stability-bar-container {
     background: rgba(0, 0, 0, 0.08);
 }
 
+/* Ecranul Game Over în modul Light */
+body.light-theme .game-over-subtitle {
+    color: rgba(0, 0, 0, 0.6);
+    font-weight: 500;
+}
+
+body.light-theme .go-stat-item {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .go-stat-label {
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+body.light-theme .high-score-badge {
+    box-shadow: 0 4px 12px rgba(176, 130, 0, 0.3);
+}
+
