@@ -63,6 +63,11 @@
                     <div id="stability-bar-fill" class="stability-bar-fill"></div>
                 </div>
             </div>
+
+            <div class="hud-item session-container">
+                <span class="hud-label">TIMP SESIUNE</span>
+                <span id="session-time-val" class="hud-value neon-cyan">00:00</span>
+            </div>
             
             <div class="hud-controls">
                 <button id="theme-toggle" class="theme-toggle-btn" aria-label="Schimbă tema (Light/Dark)">
@@ -84,14 +89,43 @@
             </div>
         </div>
 
+        <!-- Rest Reminder Banner Overlay -->
+        <div id="rest-reminder-banner" class="rest-reminder-banner hidden">
+            <div class="rest-reminder-content">
+                <div class="rest-icon">🧘</div>
+                <div class="rest-info">
+                    <h3 class="rest-title">PAUZĂ DE REFRESH & MINDFULNESS</h3>
+                    <p class="rest-text">Ai jucat 20 de minute! Este momentul ideal pentru o scurtă pauză de refacere a energiei și relaxare a ochilor.</p>
+                </div>
+                <div class="rest-actions">
+                    <button id="rest-pause-btn" class="rest-btn rest-btn-primary">PAUZĂ MINDFUL</button>
+                    <button id="rest-continue-btn" class="rest-btn rest-btn-secondary">CONTINUĂ</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Overlays -->
         
         <!-- 1. Start Screen -->
         <div id="start-screen" class="overlay">
             <div class="glass-panel">
                 <h1 class="game-title neon-text">ORBIT <span class="accent-text">FUSION</span></h1>
-                <p class="game-tagline">Roteste hexagonul. Potrivește culorile. Fuzionează energia.</p>
+                <p class="game-tagline">Rotește hexagonul. Potrivește culorile. Fuzionează energia.</p>
                 
+                <div class="mode-selector-container">
+                    <span class="hud-label mode-selector-title">MOD DE JOC</span>
+                    <div class="mode-selector">
+                        <button id="mode-classic-btn" class="mode-btn active" data-mode="classic">
+                            <span class="mode-name">ARCADE CLASIC</span>
+                            <span class="mode-desc">Provocare &amp; Stabilitate</span>
+                        </button>
+                        <button id="mode-zen-btn" class="mode-btn" data-mode="zen">
+                            <span class="mode-name">ZEN / FLOW</span>
+                            <span class="mode-desc">Relaxare &amp; Fără Game Over</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="tutorial-box">
                     <h3>Instrucțiuni de Joc:</h3>
                     <div class="steps-list">
@@ -110,7 +144,7 @@
                     </div>
                     
                     <div class="control-tip">
-                        <p>🎮 <strong>Control:</strong> Tastele <strong>A / D</strong> (sau <strong>◀ / ▶</strong>) pe tastatură / Atinge <strong>Stânga / Dreapta</strong> pe ecranul telefonului.</p>
+                        <p>🎮 <strong>Control:</strong> Tastele <strong>A / D</strong> (sau <strong>◀ / ▶</strong>) pe tastatură / <strong>Atinge &amp; Glisează</strong> (Drag) pe ecran.</p>
                     </div>
                 </div>
                 
@@ -126,20 +160,46 @@
                     </div>
                 </div>
                 
+                <div class="progression-btn-row">
+                    <button id="open-theme-btn" class="sub-action-btn" aria-label="Deschide selecția de teme">🎨 TEME</button>
+                    <button id="open-badges-btn" class="sub-action-btn" aria-label="Deschide emblemele">🏆 EMBLEME</button>
+                    <button id="open-stats-btn" class="sub-action-btn" aria-label="Deschide statisticile">📊 STATISTICI</button>
+                </div>
+                
                 <button id="start-btn" class="action-btn">START MISIUNE</button>
             </div>
         </div>
 
-        <!-- 2. Game Over Screen -->
+        <!-- 2. Game Over / Run Summary Screen -->
         <div id="game-over-screen" class="overlay hidden">
-            <div class="glass-panel">
-                <h2 class="game-over-title neon-red-text">NUCLEU IMPLODAT</h2>
-                <p class="game-over-subtitle">Stabilitatea a ajuns la 0%</p>
+            <div class="glass-panel summary-panel">
+                <h2 id="go-title" class="game-over-title neon-cyan">REZUMAT MISIUNE &amp; FLUX</h2>
+                <p id="go-subtitle" class="game-over-subtitle">Sesiune de concentrare finalizată cu succes!</p>
                 
-                <div class="game-over-stats">
+                <div class="game-over-stats positive-stats-grid">
+                    <div class="go-stat-item highlight-stat">
+                        <span class="go-stat-label">SCOR FOCALIZARE</span>
+                        <span id="go-focus-score" class="go-stat-value neon-cyan">0</span>
+                    </div>
                     <div class="go-stat-item">
                         <span class="go-stat-label">SCOR FINAL</span>
-                        <span id="go-score" class="go-stat-value neon-cyan">0</span>
+                        <span id="go-score" class="go-stat-value neon-white">0</span>
+                    </div>
+                    <div class="go-stat-item">
+                        <span class="go-stat-label">PRECIZIE ROTIRE</span>
+                        <span id="go-precision" class="go-stat-value neon-yellow">100%</span>
+                    </div>
+                    <div class="go-stat-item">
+                        <span class="go-stat-label">TOTAL FUZIONĂRI</span>
+                        <span id="go-fusions" class="go-stat-value neon-magenta">0</span>
+                    </div>
+                    <div class="go-stat-item">
+                        <span class="go-stat-label">COMBO MAXIM</span>
+                        <span id="go-max-combo" class="go-stat-value neon-cyan">x1</span>
+                    </div>
+                    <div class="go-stat-item">
+                        <span class="go-stat-label">TIMP JOC</span>
+                        <span id="go-play-time" class="go-stat-value neon-yellow">00:00</span>
                     </div>
                     <div class="go-stat-item">
                         <span class="go-stat-label">NIVEL ATINS</span>
@@ -147,9 +207,13 @@
                     </div>
                 </div>
 
+                <div id="positive-feedback-box" class="positive-feedback-box">
+                    <p id="positive-feedback-text">🌟 Bravo! Ai menținut un nivel excelent de atenție și ritm.</p>
+                </div>
+
                 <div id="new-high-score-badge" class="high-score-badge hidden">NOU RECORD!</div>
 
-                <button id="restart-btn" class="action-btn restart-btn">REÎNCEARCĂ</button>
+                <button id="restart-btn" class="action-btn restart-btn">CONTINUĂ CĂLĂTORIA</button>
             </div>
         </div>
 
@@ -160,7 +224,47 @@
                 <p class="game-tagline">Misiunea este suspendată.</p>
                 
                 <div class="control-tip pause-guide">
-                    <p>🔄 <strong>Rotire:</strong> Tastele <strong>A / D</strong> (sau <strong>◀ / ▶</strong>) / Atinge <strong>Stânga / Dreapta</strong> pe ecran.</p>
+                    <p>🔄 <strong>Rotire:</strong> Tastele <strong>A / D</strong> (sau <strong>◀ / ▶</strong>) / <strong>Glisează pe ecran (Touch Drag)</strong>.</p>
+                </div>
+
+                <div class="settings-container">
+                    <div class="setting-row">
+                        <span class="setting-label">MOD JOC</span>
+                        <button id="mode-toggle-btn" class="setting-btn" aria-label="Schimbă modul de joc">CLASIC</button>
+                    </div>
+                    <div class="setting-row">
+                        <span class="setting-label">VIBRAȚIE ECRAN</span>
+                        <button id="shake-toggle-btn" class="setting-btn" aria-label="Schimbă intensitatea vibrației ecranului">INTENS</button>
+                    </div>
+                    <div class="setting-row">
+                        <span class="setting-label">TEMĂ VISUALĂ</span>
+                        <button id="pause-theme-select-btn" class="setting-btn" aria-label="Schimbă tema cosmică">SCHIMBĂ TEMĂ</button>
+                    </div>
+                    <div class="setting-row">
+                        <span class="setting-label">EMBLEME &amp; SKILLS</span>
+                        <button id="pause-badges-btn" class="setting-btn" aria-label="Vezi emblemele deblocate">EMBLEME</button>
+                    </div>
+                    <div class="setting-row">
+                        <span class="setting-label">STATISTICI PERSISTENTE</span>
+                        <button id="pause-stats-btn" class="setting-btn" aria-label="Vezi statisticile de joc">STATISTICI</button>
+                    </div>
+                </div>
+
+                <!-- Mindfulness & Breathing Visualizer Widget -->
+                <div class="breathing-widget-container">
+                    <div class="breathing-header">
+                        <span class="breathing-title">MINDFULNESS &amp; RESPIRAȚIE</span>
+                        <span class="breathing-subtitle">BOX BREATHING (4s - 4s - 4s - 4s)</span>
+                    </div>
+                    <div class="breathing-visualizer">
+                        <div id="breathing-ring-outer" class="breathing-ring-outer">
+                            <div id="breathing-ring-inner" class="breathing-ring-inner">
+                                <span id="breathing-phase-text" class="breathing-phase-text">INHALARE...</span>
+                                <span id="breathing-timer-text" class="breathing-timer-text">4s</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="breathing-subtext" class="breathing-subtext">Respiră în ritm cu cercul energetic pentru a-ți reseta atenția.</p>
                 </div>
                 
                 <button id="resume-btn" class="action-btn">CONTINUĂ</button>
@@ -172,6 +276,80 @@
             <div class="level-up-content">
                 <h2 class="neon-text-magenta">LEVEL UP!</h2>
                 <p id="level-up-text">NIVELUL 2</p>
+            </div>
+        </div>
+
+        <!-- Toast Notifications Container -->
+        <div id="toast-container" class="toast-container"></div>
+
+        <!-- 4. Cosmic Theme Selection Modal -->
+        <div id="theme-modal" class="overlay modal-overlay hidden">
+            <div class="glass-panel modal-panel">
+                <div class="modal-header">
+                    <h2 class="neon-text">SELECȚIE TEME COSMICE</h2>
+                    <button id="theme-close-btn" class="close-btn" aria-label="Închide modal de teme">&times;</button>
+                </div>
+                <p class="modal-subtitle">Alege o temă vizuală cosmică deblocată pentru a-ți personaliza jocul.</p>
+                <div id="themes-grid" class="themes-grid">
+                    <!-- Dynamic themes loaded via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Badges & Skill Mastery Modal -->
+        <div id="badges-modal" class="overlay modal-overlay hidden">
+            <div class="glass-panel modal-panel">
+                <div class="modal-header">
+                    <h2 class="neon-text">EMBLEME DE MAESTRIE</h2>
+                    <button id="badges-close-btn" class="close-btn" aria-label="Închide modal de embleme">&times;</button>
+                </div>
+                <p class="modal-subtitle">Atinge performanțe în joc pentru a debloca toate cele 6 embleme cosmice.</p>
+                <div id="badges-grid" class="badges-grid">
+                    <!-- Dynamic badges loaded via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Lifetime Stats Modal -->
+        <div id="stats-modal" class="overlay modal-overlay hidden">
+            <div class="glass-panel modal-panel">
+                <div class="modal-header">
+                    <h2 class="neon-text-magenta">STATISTICI PERSISTENTE</h2>
+                    <button id="stats-close-btn" class="close-btn" aria-label="Închide modal de statistici">&times;</button>
+                </div>
+                <p class="modal-subtitle">Progresul și realizările tale pe termen lung salvate în profil.</p>
+                <div class="stats-grid-container">
+                    <div class="stat-card">
+                        <span class="stat-icon">💥</span>
+                        <span class="stat-card-label">TOTAL FUZIUNI</span>
+                        <span id="stat-total-fusions" class="stat-card-value neon-cyan">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">⚡</span>
+                        <span class="stat-card-label">MAX COMBO</span>
+                        <span id="stat-max-combo" class="stat-card-value neon-magenta">x1</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">🧠</span>
+                        <span class="stat-card-label">MAX FOCUS SCORE</span>
+                        <span id="stat-max-focus" class="stat-card-value neon-yellow">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">⏱️</span>
+                        <span class="stat-card-label">TIMP TOTAL JOC</span>
+                        <span id="stat-total-time" class="stat-card-value neon-cyan">00:00</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">🎮</span>
+                        <span class="stat-card-label">TOTAL MISIUNI</span>
+                        <span id="stat-total-runs" class="stat-card-value neon-white">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">🎯</span>
+                        <span class="stat-card-label">PERFECT HITS</span>
+                        <span id="stat-perfect-hits" class="stat-card-value neon-yellow">0</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -7,67 +7,542 @@
 // 1. CONSTANTS & SYSTEM CONFIGURATION
 // ==========================================================================
 
+// ==========================================================================
+// 1. CONSTANTS, COSMIC THEMES & MASTERY SYSTEM CONFIGURATION
+// ==========================================================================
+
+const COSMIC_THEMES = {
+    cyber_neon: {
+        id: 'cyber_neon',
+        name: 'Cyber Neon',
+        desc: 'Deblocat implicit (Clasic)',
+        unlockedByDefault: true,
+        colors: [
+            { name: 'Plasmă Cyan', hex: '#00f0ff', glow: 'rgba(0, 240, 255, 0.6)' },
+            { name: 'Impuls Neon', hex: '#ff007f', glow: 'rgba(255, 0, 127, 0.6)' },
+            { name: 'Frecvență Solară', hex: '#ffdd00', glow: 'rgba(255, 221, 0, 0.6)' },
+            { name: 'Aură Cuantică', hex: '#00ff66', glow: 'rgba(0, 255, 102, 0.6)' },
+            { name: 'Flux Gravitațional', hex: '#aa00ff', glow: 'rgba(170, 0, 255, 0.6)' },
+            { name: 'Nucleu Supernovă', hex: '#ffffff', glow: 'rgba(255, 255, 255, 0.8)' }
+        ],
+        canvasStyles: {
+            bgGradient: ['#0f1026', '#030307'],
+            gridColor: 'rgba(255, 255, 255, 0.035)',
+            coreFill: '#010103',
+            coreStroke: '#4b0082',
+            canvasBg: 'rgba(5, 5, 8, 0.3)',
+            starColor: '#ffffff'
+        },
+        cssVars: {
+            '--bg-color': '#050508',
+            '--panel-bg': 'rgba(10, 10, 18, 0.75)',
+            '--cyan': '#00f0ff',
+            '--magenta': '#ff007f',
+            '--yellow': '#ffdd00',
+            '--green': '#00ff66',
+            '--purple': '#aa00ff'
+        },
+        unlockCheck: () => true
+    },
+    solar_flare: {
+        id: 'solar_flare',
+        name: 'Solar Flare',
+        desc: 'Atinge un Combo x5',
+        unlockedByDefault: false,
+        colors: [
+            { name: 'Chihlimbar Solar', hex: '#ffaa00', glow: 'rgba(255, 170, 0, 0.6)' },
+            { name: 'Coral Incandescent', hex: '#ff4400', glow: 'rgba(255, 68, 0, 0.6)' },
+            { name: 'Aur Plasmatic', hex: '#ffe600', glow: 'rgba(255, 230, 0, 0.6)' },
+            { name: 'Portocaliu Coronar', hex: '#ff7700', glow: 'rgba(255, 119, 0, 0.6)' },
+            { name: 'Gigantă Roșie', hex: '#ff0044', glow: 'rgba(255, 0, 68, 0.6)' },
+            { name: 'Nucleu Radiant', hex: '#ffffff', glow: 'rgba(255, 255, 255, 0.9)' }
+        ],
+        canvasStyles: {
+            bgGradient: ['#260c04', '#080100'],
+            gridColor: 'rgba(255, 170, 0, 0.05)',
+            coreFill: '#0a0200',
+            coreStroke: '#ff4400',
+            canvasBg: 'rgba(18, 5, 2, 0.35)',
+            starColor: '#ffddaa'
+        },
+        cssVars: {
+            '--bg-color': '#080200',
+            '--panel-bg': 'rgba(24, 8, 4, 0.8)',
+            '--cyan': '#ffaa00',
+            '--magenta': '#ff4400',
+            '--yellow': '#ffe600',
+            '--green': '#ff7700',
+            '--purple': '#ff0044'
+        },
+        unlockCheck: (stats, run) => (stats.highestCombo >= 5 || (run && run.maxCombo >= 5))
+    },
+    deep_nebula: {
+        id: 'deep_nebula',
+        name: 'Deep Nebula',
+        desc: '10 min Zen sau 50 fuziuni',
+        unlockedByDefault: false,
+        colors: [
+            { name: 'Teal Cosmic', hex: '#00e5ff', glow: 'rgba(0, 229, 255, 0.6)' },
+            { name: 'Indigo Nebular', hex: '#7d5fff', glow: 'rgba(125, 95, 255, 0.6)' },
+            { name: 'Aură Violetă', hex: '#be2edd', glow: 'rgba(190, 46, 221, 0.6)' },
+            { name: 'Safir Profund', hex: '#18dcff', glow: 'rgba(24, 220, 255, 0.6)' },
+            { name: 'Stelar Magenta', hex: '#ff3f34', glow: 'rgba(255, 63, 52, 0.6)' },
+            { name: 'Perlă Astrală', hex: '#ffffff', glow: 'rgba(255, 255, 255, 0.85)' }
+        ],
+        canvasStyles: {
+            bgGradient: ['#081226', '#02050f'],
+            gridColor: 'rgba(125, 95, 255, 0.05)',
+            coreFill: '#01030a',
+            coreStroke: '#7d5fff',
+            canvasBg: 'rgba(4, 10, 24, 0.35)',
+            starColor: '#d1ccc0'
+        },
+        cssVars: {
+            '--bg-color': '#030611',
+            '--panel-bg': 'rgba(8, 16, 36, 0.8)',
+            '--cyan': '#00e5ff',
+            '--magenta': '#be2edd',
+            '--yellow': '#18dcff',
+            '--green': '#7d5fff',
+            '--purple': '#ff3f34'
+        },
+        unlockCheck: (stats, run) => (stats.totalFusions >= 50 || stats.totalPlayTimeSeconds >= 600 || stats.zenPlayTimeSeconds >= 600)
+    },
+    dark_void: {
+        id: 'dark_void',
+        name: 'Dark Void',
+        desc: 'Atinge Nivel 5 sau 100 fuziuni',
+        unlockedByDefault: false,
+        colors: [
+            { name: 'Cenușă Obscură', hex: '#8899a6', glow: 'rgba(136, 153, 166, 0.6)' },
+            { name: 'Orizont Violet', hex: '#8c7ae6', glow: 'rgba(140, 122, 230, 0.6)' },
+            { name: 'Crimson Abisal', hex: '#e84118', glow: 'rgba(232, 65, 24, 0.6)' },
+            { name: 'Aur de Eclipsă', hex: '#fbc531', glow: 'rgba(251, 197, 49, 0.6)' },
+            { name: 'Plasmă Întunecată', hex: '#9c88ff', glow: 'rgba(156, 136, 255, 0.6)' },
+            { name: 'Singularitate', hex: '#ffffff', glow: 'rgba(255, 255, 255, 0.9)' }
+        ],
+        canvasStyles: {
+            bgGradient: ['#08080c', '#000000'],
+            gridColor: 'rgba(255, 255, 255, 0.025)',
+            coreFill: '#000000',
+            coreStroke: '#8c7ae6',
+            canvasBg: 'rgba(4, 4, 6, 0.4)',
+            starColor: '#aaaaaa'
+        },
+        cssVars: {
+            '--bg-color': '#000000',
+            '--panel-bg': 'rgba(14, 14, 20, 0.85)',
+            '--cyan': '#8899a6',
+            '--magenta': '#e84118',
+            '--yellow': '#fbc531',
+            '--green': '#8c7ae6',
+            '--purple': '#9c88ff'
+        },
+        unlockCheck: (stats, run) => (stats.totalFusions >= 100 || (run && run.level && run.level >= 5))
+    },
+    light_ether: {
+        id: 'light_ether',
+        name: 'Light Ether',
+        desc: 'Atinge Nivel 3 sau 5 Lovituri Perfecte',
+        unlockedByDefault: false,
+        colors: [
+            { name: 'Eter Cyan', hex: '#00a3cc', glow: 'rgba(0, 163, 204, 0.5)' },
+            { name: 'Sky Magenta', hex: '#d9006c', glow: 'rgba(217, 0, 108, 0.5)' },
+            { name: 'Chihlimbar Pur', hex: '#cda100', glow: 'rgba(205, 161, 0, 0.5)' },
+            { name: 'Smarald Eteric', hex: '#00a33c', glow: 'rgba(0, 163, 60, 0.5)' },
+            { name: 'Liliac Suav', hex: '#8800cc', glow: 'rgba(136, 0, 204, 0.5)' },
+            { name: 'Nucleu Obscur', hex: '#1c1c24', glow: 'rgba(28, 28, 36, 0.4)' }
+        ],
+        canvasStyles: {
+            bgGradient: ['#f4f6fa', '#e1e5ee'],
+            gridColor: 'rgba(0, 0, 0, 0.04)',
+            coreFill: '#fdfdfd',
+            coreStroke: '#aa00ff',
+            canvasBg: 'rgba(244, 245, 248, 0.35)',
+            starColor: 'rgba(0, 0, 0, 0.2)'
+        },
+        cssVars: {
+            '--bg-color': '#eaf0f6',
+            '--panel-bg': 'rgba(255, 255, 255, 0.85)',
+            '--cyan': '#0088cc',
+            '--magenta': '#c90060',
+            '--yellow': '#b88e00',
+            '--green': '#008f35',
+            '--purple': '#7700bb'
+        },
+        unlockCheck: (stats, run) => (stats.perfectHitsCount >= 5 || (run && run.level && run.level >= 3))
+    }
+};
+
 const PALETTES = {
-    dark: [
-        { name: 'Plasmă Cyan', hex: '#00f0ff', glow: 'rgba(0, 240, 255, 0.6)' },      // Level 1
-        { name: 'Impuls Neon', hex: '#ff007f', glow: 'rgba(255, 0, 127, 0.6)' },      // Level 2
-        { name: 'Frecvență Solară', hex: '#ffdd00', glow: 'rgba(255, 221, 0, 0.6)' }, // Level 3
-        { name: 'Aură Cuantică', hex: '#00ff66', glow: 'rgba(0, 255, 102, 0.6)' },     // Level 4
-        { name: 'Flux Gravitațional', hex: '#aa00ff', glow: 'rgba(170, 0, 255, 0.6)' },// Level 5
-        { name: 'Nucleu Supernovă', hex: '#ffffff', glow: 'rgba(255, 255, 255, 0.8)' } // Level 6 (Special)
-    ],
-    light: [
-        { name: 'Plasmă Cyan', hex: '#00a3cc', glow: 'rgba(0, 163, 204, 0.5)' },      // Level 1 (Contrast mărit pe fundal deschis)
-        { name: 'Impuls Neon', hex: '#d9006c', glow: 'rgba(217, 0, 108, 0.5)' },      // Level 2
-        { name: 'Frecvență Solară', hex: '#cda100', glow: 'rgba(205, 161, 0, 0.5)' },  // Level 3
-        { name: 'Aură Cuantică', hex: '#00a33c', glow: 'rgba(0, 163, 60, 0.5)' },      // Level 4
-        { name: 'Flux Gravitațional', hex: '#8800cc', glow: 'rgba(136, 0, 204, 0.5)' },// Level 5
-        { name: 'Nucleu Supernovă', hex: '#1c1c24', glow: 'rgba(28, 28, 36, 0.4)' }    // Level 6 (Special - nucleu întunecat)
-    ]
+    dark: COSMIC_THEMES.cyber_neon.colors,
+    light: COSMIC_THEMES.light_ether.colors,
+    cyber_neon: COSMIC_THEMES.cyber_neon.colors,
+    solar_flare: COSMIC_THEMES.solar_flare.colors,
+    deep_nebula: COSMIC_THEMES.deep_nebula.colors,
+    dark_void: COSMIC_THEMES.dark_void.colors,
+    light_ether: COSMIC_THEMES.light_ether.colors
 };
 
-let COLORS = PALETTES.dark; // Va deține paleta activă în funcție de temă
-let currentTheme = 'dark';
-
-let themeStyles = {
-    gridColor: 'rgba(255, 255, 255, 0.035)',
-    coreFill: '#010103',
-    coreStroke: '#4b0082',
-    canvasBg: 'rgba(5, 5, 8, 0.3)',
-    starColor: '#ffffff'
+const SKILL_BADGES = {
+    combo_master: {
+        id: 'combo_master',
+        name: 'Combo Master',
+        icon: '⚡',
+        desc: 'Atinge o serie de combo x5 în timpul unei misiuni.',
+        check: (stats, run) => stats.highestCombo >= 5 || (run && run.maxCombo >= 5)
+    },
+    precision_rotator: {
+        id: 'precision_rotator',
+        name: 'Precision Rotator',
+        icon: '🎯',
+        desc: 'Realizează 5 lovituri perfecte (Perfect Hits) în centru.',
+        check: (stats, run) => stats.perfectHitsCount >= 5
+    },
+    mindful_gamer: {
+        id: 'mindful_gamer',
+        name: 'Mindful Gamer',
+        icon: '🧘',
+        desc: 'Acumulează 10 minute (600 sec) de joc Zen sau concentrat.',
+        check: (stats, run) => stats.totalPlayTimeSeconds >= 600 || stats.zenPlayTimeSeconds >= 600
+    },
+    fusion_master: {
+        id: 'fusion_master',
+        name: 'Fusion Master',
+        icon: '💥',
+        desc: 'Realizează 50 de fuziuni de scut în total.',
+        check: (stats, run) => stats.totalFusions >= 50
+    },
+    cosmic_explorer: {
+        id: 'cosmic_explorer',
+        name: 'Cosmic Explorer',
+        icon: '🌌',
+        desc: 'Deblochează cel puțin 3 Teme Cosmice.',
+        check: (stats, run, unlockedThemesList) => (unlockedThemesList || unlockedThemes).length >= 3
+    },
+    focus_guru: {
+        id: 'focus_guru',
+        name: 'Focus Guru',
+        icon: '🧠',
+        desc: 'Obține un scor înalt de concentrare (Focus Score >= 85).',
+        check: (stats, run) => stats.highestFocusScore >= 85
+    }
 };
+
+let COLORS = COSMIC_THEMES.cyber_neon.colors;
+let currentTheme = 'cyber_neon';
+
+let themeStyles = { ...COSMIC_THEMES.cyber_neon.canvasStyles };
+
+// Lifetime Statistics State & Load / Save Handlers
+let lifetimeStats = {
+    totalFusions: 0,
+    highestCombo: 1,
+    highestFocusScore: 0,
+    totalPlayTimeSeconds: 0,
+    totalRuns: 0,
+    perfectHitsCount: 0,
+    zenPlayTimeSeconds: 0
+};
+
+function loadLifetimeStats() {
+    try {
+        const raw = localStorage.getItem('orbit_fusion_stats');
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            lifetimeStats = { ...lifetimeStats, ...parsed };
+        }
+    } catch (e) {
+        console.warn("Could not load orbit_fusion_stats from localStorage", e);
+    }
+}
+
+function saveLifetimeStats() {
+    try {
+        localStorage.setItem('orbit_fusion_stats', JSON.stringify(lifetimeStats));
+    } catch (e) {
+        console.warn("Could not save orbit_fusion_stats to localStorage", e);
+    }
+}
+
+let unlockedBadges = [];
+function loadUnlockedBadges() {
+    try {
+        const raw = localStorage.getItem('orbit_fusion_badges');
+        if (raw) {
+            unlockedBadges = JSON.parse(raw);
+        }
+    } catch (e) {
+        console.warn("Could not load orbit_fusion_badges from localStorage", e);
+    }
+}
+
+function saveUnlockedBadges() {
+    try {
+        localStorage.setItem('orbit_fusion_badges', JSON.stringify(unlockedBadges));
+    } catch (e) {
+        console.warn("Could not save orbit_fusion_badges to localStorage", e);
+    }
+}
+
+let unlockedThemes = ['cyber_neon'];
+function loadUnlockedThemes() {
+    try {
+        const raw = localStorage.getItem('orbit_fusion_unlocked_themes');
+        if (raw) {
+            unlockedThemes = JSON.parse(raw);
+            if (!unlockedThemes.includes('cyber_neon')) {
+                unlockedThemes.push('cyber_neon');
+            }
+        }
+    } catch (e) {
+        console.warn("Could not load orbit_fusion_unlocked_themes from localStorage", e);
+    }
+}
+
+function saveUnlockedThemes() {
+    try {
+        localStorage.setItem('orbit_fusion_unlocked_themes', JSON.stringify(unlockedThemes));
+    } catch (e) {
+        console.warn("Could not save orbit_fusion_unlocked_themes to localStorage", e);
+    }
+}
+
+function showToastNotification(icon, title, message) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+        <div class="toast-icon">${icon}</div>
+        <div class="toast-content">
+            <span class="toast-title">${title}</span>
+            <span class="toast-message">${message}</span>
+        </div>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+        }
+    }, 4000);
+}
+
+function checkBadgesAndThemes() {
+    let changed = false;
+    const runState = {
+        maxCombo: typeof runMaxCombo !== 'undefined' ? runMaxCombo : 1,
+        fusions: typeof runTotalFusions !== 'undefined' ? runTotalFusions : 0,
+        level: typeof level !== 'undefined' ? level : 1,
+        playTime: typeof runPlayTimeSeconds !== 'undefined' ? runPlayTimeSeconds : 0
+    };
+
+    // Evaluate locked badges
+    Object.keys(SKILL_BADGES).forEach(badgeId => {
+        if (!unlockedBadges.includes(badgeId)) {
+            const badge = SKILL_BADGES[badgeId];
+            const isUnlocked = badge.check(lifetimeStats, runState, unlockedThemes);
+            if (isUnlocked) {
+                unlockedBadges.push(badgeId);
+                saveUnlockedBadges();
+                showToastNotification(badge.icon, badge.name, "Emblemă Deblocată!");
+                if (typeof soundManager !== 'undefined' && soundManager.playLevelUp) {
+                    soundManager.playLevelUp();
+                }
+                changed = true;
+            }
+        }
+    });
+
+    // Evaluate locked themes
+    Object.keys(COSMIC_THEMES).forEach(themeId => {
+        if (!unlockedThemes.includes(themeId)) {
+            const theme = COSMIC_THEMES[themeId];
+            const isUnlocked = theme.unlockCheck(lifetimeStats, runState);
+            if (isUnlocked) {
+                unlockedThemes.push(themeId);
+                saveUnlockedThemes();
+                showToastNotification("🎨", theme.name, "Temă Cosmică Deblocată!");
+                if (typeof soundManager !== 'undefined' && soundManager.playLevelUp) {
+                    soundManager.playLevelUp();
+                }
+                changed = true;
+            }
+        }
+    });
+
+    // Re-check cosmic_explorer badge if theme count increased
+    if (!unlockedBadges.includes('cosmic_explorer')) {
+        const badge = SKILL_BADGES.cosmic_explorer;
+        if (badge.check(lifetimeStats, runState, unlockedThemes)) {
+            unlockedBadges.push('cosmic_explorer');
+            saveUnlockedBadges();
+            showToastNotification(badge.icon, badge.name, "Emblemă Deblocată!");
+            if (typeof soundManager !== 'undefined' && soundManager.playLevelUp) {
+                soundManager.playLevelUp();
+            }
+            changed = true;
+        }
+    }
+
+    if (changed) {
+        renderBadgesGrid();
+        renderThemesGrid();
+        renderStatsModal();
+    }
+}
 
 function applyTheme(themeName) {
+    if (!COSMIC_THEMES[themeName]) {
+        themeName = themeName === 'light' ? 'light_ether' : 'cyber_neon';
+    }
+    
+    // Fallback if locked
+    if (!unlockedThemes.includes(themeName) && !COSMIC_THEMES[themeName].unlockedByDefault) {
+        themeName = 'cyber_neon';
+    }
+
     currentTheme = themeName;
+    const themeDef = COSMIC_THEMES[themeName];
+    COLORS = themeDef.colors;
+    themeStyles = { ...themeDef.canvasStyles };
+
+    // Apply CSS vars to document
+    if (themeDef.cssVars) {
+        Object.keys(themeDef.cssVars).forEach(key => {
+            document.documentElement.style.setProperty(key, themeDef.cssVars[key]);
+        });
+    }
+
     const icon = document.getElementById('theme-icon');
-    if (themeName === 'light') {
-        COLORS = PALETTES.light;
-        themeStyles.gridColor = 'rgba(0, 0, 0, 0.04)';
-        themeStyles.coreFill = '#fdfdfd';
-        themeStyles.coreStroke = '#aa00ff';
-        themeStyles.canvasBg = 'rgba(244, 245, 248, 0.35)';
-        themeStyles.starColor = 'rgba(0, 0, 0, 0.2)'; // Scântei întunecate, fine
+    if (themeName === 'light_ether') {
         document.body.classList.add('light-theme');
         if (icon) {
-            // Crescent Moon SVG path (pentru comutarea înapoi în modul întunecat)
             icon.setAttribute('d', 'M12.1,22C6.5,22 2,17.5 2,11.9C2,7.4 5,3.5 9.2,2.2C9.8,2 10.4,2.4 10.5,3C10.6,3.6 10.2,4.2 9.6,4.3C6.4,5 4,7.8 4,11.9C4,16.4 7.6,20 12.1,20C16.2,20 19,17.6 19.7,14.4C19.8,13.8 20.4,13.4 21,13.5C21.6,13.6 22,14.2 21.8,14.8C20.5,19 16.6,22 12.1,22Z');
         }
     } else {
-        COLORS = PALETTES.dark;
-        themeStyles.gridColor = 'rgba(255, 255, 255, 0.035)';
-        themeStyles.coreFill = '#010103';
-        themeStyles.coreStroke = '#4b0082';
-        themeStyles.canvasBg = 'rgba(5, 5, 8, 0.3)';
-        themeStyles.starColor = '#ffffff';
         document.body.classList.remove('light-theme');
         if (icon) {
-            // Sun SVG path (pentru comutarea în modul deschis)
             icon.setAttribute('d', 'M12,18C11.11,18 10.26,17.8 9.5,17.45C11.56,16.5 13,14.42 13,12C13,9.58 11.56,7.5 9.5,6.55C10.26,6.2 11.11,6 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31L23.31,12L20,8.69Z');
         }
     }
-    // Re-inițializăm particulele pe noul fundal
+
+    try {
+        localStorage.setItem('orbit_fusion_theme', themeName);
+    } catch (err) {
+        console.warn("Could not save theme to localStorage", err);
+    }
+
+    cachedBgGradient = null;
+    if (typeof initOrbCache === 'function') initOrbCache();
+    if (typeof initCoreGrad === 'function') initCoreGrad();
     if (typeof initStars === 'function') initStars();
     if (typeof initNebulae === 'function') initNebulae();
+}
+
+function renderBadgesGrid() {
+    const grid = document.getElementById('badges-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    Object.keys(SKILL_BADGES).forEach(badgeId => {
+        const badge = SKILL_BADGES[badgeId];
+        const isUnlocked = unlockedBadges.includes(badgeId);
+        
+        const card = document.createElement('div');
+        card.className = `badge-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+        card.innerHTML = `
+            <div class="badge-card-icon">${badge.icon}</div>
+            <div class="badge-card-info">
+                <span class="badge-card-name">${badge.name}</span>
+                <span class="badge-card-desc">${badge.desc}</span>
+                <span class="badge-card-status">${isUnlocked ? 'DEBLOCAT' : 'BLOCAT'}</span>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function renderStatsModal() {
+    const fusions = document.getElementById('stat-total-fusions');
+    const combo = document.getElementById('stat-max-combo');
+    const focus = document.getElementById('stat-max-focus');
+    const time = document.getElementById('stat-total-time');
+    const runs = document.getElementById('stat-total-runs');
+    const perfect = document.getElementById('stat-perfect-hits');
+
+    if (fusions) fusions.innerText = lifetimeStats.totalFusions;
+    if (combo) combo.innerText = `x${lifetimeStats.highestCombo}`;
+    if (focus) focus.innerText = lifetimeStats.highestFocusScore;
+    if (time) time.innerText = formatTime(lifetimeStats.totalPlayTimeSeconds);
+    if (runs) runs.innerText = lifetimeStats.totalRuns;
+    if (perfect) perfect.innerText = lifetimeStats.perfectHitsCount;
+}
+
+function renderThemesGrid() {
+    const grid = document.getElementById('themes-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    Object.keys(COSMIC_THEMES).forEach(themeId => {
+        const theme = COSMIC_THEMES[themeId];
+        const isUnlocked = unlockedThemes.includes(themeId) || theme.unlockedByDefault;
+        const isActive = currentTheme === themeId;
+
+        const card = document.createElement('div');
+        card.className = `theme-card ${isActive ? 'active' : ''} ${isUnlocked ? 'unlocked' : 'locked'}`;
+        
+        const swatchesHtml = theme.colors.slice(0, 5).map(c => `<span class="swatch" style="background-color:${c.hex}"></span>`).join('');
+        
+        card.innerHTML = `
+            <div class="theme-card-header">
+                <span class="theme-card-title">${theme.name}</span>
+                <span class="theme-card-badge">${isActive ? 'ACTIVĂ' : (isUnlocked ? 'DEBLOCATĂ' : 'BLOCATĂ')}</span>
+            </div>
+            <div class="theme-swatches">${swatchesHtml}</div>
+            <div class="theme-card-desc">${isUnlocked ? 'Paletă activabilă' : `Necesar: ${theme.desc}`}</div>
+            <button class="theme-select-btn" ${!isUnlocked ? 'disabled' : ''}>
+                ${isActive ? 'ACTIVĂ ÎN JOC' : (isUnlocked ? 'APLICĂ TEMĂ' : 'BLOCATĂ')}
+            </button>
+        `;
+
+        const btn = card.querySelector('.theme-select-btn');
+        if (btn && isUnlocked && !isActive) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                applyTheme(themeId);
+                renderThemesGrid();
+            });
+        }
+
+        grid.appendChild(card);
+    });
+}
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        if (modalId === 'badges-modal') renderBadgesGrid();
+        if (modalId === 'stats-modal') renderStatsModal();
+        if (modalId === 'theme-modal') renderThemesGrid();
+        const hud = document.getElementById('hud');
+        if (hud) hud.classList.add('hidden');
+        modal.classList.remove('hidden');
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('hidden');
+        if (gameState === 'playing') {
+            const hud = document.getElementById('hud');
+            if (hud) hud.classList.remove('hidden');
+        }
+    }
 }
 
 const STABILITY_CRITICAL_THRESHOLD = 30; // Under 30% health, the bar animations change to red/alert
@@ -135,21 +610,56 @@ class SoundManager {
     }
 
     // Sounds
-    playMatch() {
+    playMatch(comboMultiplier = 1) {
+        if (gameMode === 'zen') {
+            // Soft sine wave with gentle release envelope for Zen mode
+            const zenNotes = [261.63, 329.63, 392.00, 523.25, 659.25]; // C4, E4, G4, C5, E5
+            const note = zenNotes[Math.floor(Math.random() * zenNotes.length)];
+            this.playNote(note, 'sine', 0.45, 0.08);
+            this.playNote(note * 1.5, 'sine', 0.35, 0.03, 0.06);
+            return;
+        }
         // Pentatonic scale note based on score/combo
         const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25]; // C4, D4, E4, G4, A4, C5
-        const note = notes[Math.floor(Math.random() * notes.length)];
+        const baseNote = notes[Math.floor(Math.random() * notes.length)];
+        const pitchMult = 1 + Math.min(1.2, (comboMultiplier - 1) * 0.12);
+        const note = baseNote * pitchMult;
+        
         this.playNote(note * 1.5, 'sine', 0.25, 0.12);
         // Small delay harmonic
         this.playNote(note * 3, 'sine', 0.15, 0.04, 0.05);
+
+        // Extra harmonic chime on high combo
+        if (comboMultiplier >= 3) {
+            this.playNote(note * 2, 'triangle', 0.2, 0.06, 0.08);
+        }
     }
 
-    playFusion() {
-        // Arpeggio sound
+    playPerfect() {
+        // High-pitched golden chime sequence for Perfect! central hits
+        const notes = [659.25, 830.61, 987.77, 1318.51]; // E5, G#5, B5, E6
+        notes.forEach((freq, idx) => {
+            this.playNote(freq, 'sine', 0.35, 0.1, idx * 0.04);
+        });
+    }
+
+    playFusion(comboMultiplier = 1) {
+        // Arpeggio sound scaled by combo richness
         const root = 261.63; // C4
-        const ratio = [1, 1.25, 1.5, 2]; // Major Chord
+        const pitchMult = 1 + Math.min(0.8, (comboMultiplier - 1) * 0.1);
+        const ratio = comboMultiplier >= 4 ? [1, 1.25, 1.5, 1.75, 2] : [1, 1.25, 1.5, 2]; // Major 7th Chord at high combos
         ratio.forEach((r, idx) => {
-            this.playNote(root * r * 1.5, 'triangle', 0.4, 0.08, idx * 0.06);
+            this.playNote(root * pitchMult * r * 1.5, 'triangle', 0.45, 0.09, idx * 0.05);
+        });
+    }
+
+    playComboStinger(comboMult) {
+        // Dynamic multi-tone fanfare when reaching combo tiers
+        if (this.muted || !this.ctx) return;
+        const baseFreq = comboMult >= 5 ? 523.25 : 392.00; // C5 or G4
+        const chord = [1, 1.25, 1.5];
+        chord.forEach((ratio, idx) => {
+            this.playNote(baseFreq * ratio, 'sine', 0.5, 0.08, idx * 0.06);
         });
     }
 
@@ -162,6 +672,11 @@ class SoundManager {
     }
 
     playError() {
+        if (gameMode === 'zen') {
+            // Soft muted deflection chime instead of harsh buzz in Zen mode
+            this.playNote(220, 'sine', 0.25, 0.05);
+            return;
+        }
         // Short, buzzing alert tone
         this.playNote(110, 'triangle', 0.15, 0.2);
         this.playNote(105, 'sawtooth', 0.15, 0.08);
@@ -208,13 +723,297 @@ let level = 1;
 let xp = 0;
 let xpNeeded = 80;
 let stability = 100;
-let gameState = 'start'; // 'start', 'playing', 'game_over'
+let gameState = 'start'; // 'start', 'playing', 'game_over', 'paused'
 let screenShake = 0;
+
+// Milestone 3 (R2): Mindful Gaming & Zen State Variables
+let sessionStartTime = Date.now();
+let sessionElapsedSeconds = 0;
+let runPlayTimeSeconds = 0;
+const REST_REMINDER_INTERVAL = 20 * 60; // 20 minutes in seconds (1200s)
+let nextRestReminderTime = REST_REMINDER_INTERVAL;
+
+// Zen / Flow Mode State ('classic' or 'zen')
+let gameMode = 'classic';
+try {
+    gameMode = localStorage.getItem('orbit_fusion_mode') || 'classic';
+} catch (e) {
+    gameMode = 'classic';
+}
+
+// Run Mastery & Positive Reinforcement Metrics Tracking
+let runSuccessfulMatches = 0;
+let runTotalImpacts = 0;
+let runTotalFusions = 0;
+let runMaxCombo = 1;
+
+// Mindfulness Box Breathing Widget Cycle State (Inhale 4s -> Hold 4s -> Exhale 4s -> Rest 4s)
+let breathingCycleTime = 0;
+const BREATHING_PHASE_DURATION = 4.0; // Seconds per phase
+
+// Combo Multiplier System State
+let comboCount = 0;
+let comboTimer = 0;
+const COMBO_WINDOW = 3.5; // Seconds window to extend combo streak
+let comboMultiplier = 1;
+
+// Screen Shake Intensity Setting ('off', 'medium', 'intense')
+let shakeSetting = 'intense';
+try {
+    shakeSetting = localStorage.getItem('orbit_fusion_shake') || 'intense';
+} catch (e) {
+    shakeSetting = 'intense';
+}
+
+// Strict Memory Limit Caps (eliminates GC pressure & micro-stutters)
+const MAX_PARTICLES = 250;
+const MAX_SHOCKWAVES = 20;
+const MAX_FLOATING_TEXTS = 40;
+
+// High-Performance Offscreen Canvas & Gradient Caches for 60 FPS
+let cachedBgGradient = null;
+let orbCanvasCache = [];
+let coreGlowGrad = null;
+
+function initOrbCache() {
+    orbCanvasCache = [];
+    const dpr = window.devicePixelRatio || 1;
+    const orbSize = 7;
+    const canvasSize = Math.ceil(orbSize * 4 * Math.min(dpr, 2));
+    const center = canvasSize / 2;
+    const drawRadius = orbSize * Math.min(dpr, 2);
+
+    COLORS.forEach((colorObj, idx) => {
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = canvasSize;
+        offCanvas.height = canvasSize;
+        const offCtx = offCanvas.getContext('2d');
+
+        const grad = offCtx.createRadialGradient(center, center, 0, center, center, drawRadius * 2);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.3, colorObj.hex);
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+        offCtx.fillStyle = grad;
+        offCtx.beginPath();
+        offCtx.arc(center, center, drawRadius * 2, 0, Math.PI * 2);
+        offCtx.fill();
+
+        orbCanvasCache[idx] = offCanvas;
+    });
+}
+
+function initCoreGrad() {
+    coreGlowGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 60);
+    if (currentTheme === 'light' || currentTheme === 'light_ether') {
+        coreGlowGrad.addColorStop(0, 'rgba(170, 0, 255, 0.15)');
+        coreGlowGrad.addColorStop(0.5, 'rgba(170, 0, 255, 0.05)');
+    } else {
+        coreGlowGrad.addColorStop(0, 'rgba(15, 10, 30, 0.6)');
+        coreGlowGrad.addColorStop(0.5, 'rgba(10, 0, 20, 0.2)');
+    }
+    coreGlowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+}
+
+// Touch Drag State
+let isInputActive = false;
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let lastTouchAngle = 0;
 
 // Timing helper variables
 let lastTime = 0;
 let spawnTimer = 0;
 let orbSpawnRateModifier = 1.0;
+
+// Helper: Format Time in MM:SS (or HH:MM:SS)
+function formatTime(totalSeconds) {
+    const sec = Math.floor(totalSeconds % 60);
+    const min = Math.floor((totalSeconds / 60) % 60);
+    const hrs = Math.floor(totalSeconds / 3600);
+    const pad = (num) => num.toString().padStart(2, '0');
+    if (hrs > 0) {
+        return `${pad(hrs)}:${pad(min)}:${pad(sec)}`;
+    }
+    return `${pad(min)}:${pad(sec)}`;
+}
+
+// Helper: Set Game Mode (Classic Arcade vs Zen / Flow)
+function setGameMode(mode) {
+    gameMode = mode;
+    try {
+        localStorage.setItem('orbit_fusion_mode', mode);
+    } catch (e) {
+        console.warn("Could not save game mode to localStorage", e);
+    }
+    
+    // Update main menu mode selector buttons
+    const classicBtn = document.getElementById('mode-classic-btn');
+    const zenBtn = document.getElementById('mode-zen-btn');
+    if (classicBtn && zenBtn) {
+        if (mode === 'zen') {
+            classicBtn.classList.remove('active');
+            zenBtn.classList.add('active');
+        } else {
+            classicBtn.classList.add('active');
+            zenBtn.classList.remove('active');
+        }
+    }
+
+    // Update pause menu setting button text
+    const toggleBtn = document.getElementById('mode-toggle-btn');
+    if (toggleBtn) {
+        toggleBtn.innerText = mode === 'zen' ? 'ZEN / FLOW' : 'CLASIC';
+    }
+
+    // Toggle serene visual atmosphere class on body
+    if (mode === 'zen') {
+        document.body.classList.add('zen-mode');
+        if (stability < 100) {
+            stability = 100;
+            updateHUD();
+        }
+    } else {
+        document.body.classList.remove('zen-mode');
+    }
+}
+
+// Helper: Show/Hide Session Rest Reminder Banner
+function showRestReminder() {
+    const banner = document.getElementById('rest-reminder-banner');
+    if (banner) banner.classList.remove('hidden');
+}
+
+function hideRestReminder() {
+    const banner = document.getElementById('rest-reminder-banner');
+    if (banner) banner.classList.add('hidden');
+}
+
+// Helper: Update Pause Screen Box Breathing Visualizer Widget
+function updateBreathingWidget(dt) {
+    const outerRing = document.getElementById('breathing-ring-outer');
+    const phaseText = document.getElementById('breathing-phase-text');
+    const timerText = document.getElementById('breathing-timer-text');
+    if (!outerRing || !phaseText || !timerText) return;
+
+    breathingCycleTime += dt;
+    const cycleTotal = BREATHING_PHASE_DURATION * 4; // 16s
+    const currentCycleTime = breathingCycleTime % cycleTotal;
+    
+    const phaseIndex = Math.floor(currentCycleTime / BREATHING_PHASE_DURATION); // 0, 1, 2, 3
+    const phaseTimeRemaining = BREATHING_PHASE_DURATION - (currentCycleTime % BREATHING_PHASE_DURATION);
+    const progressInPhase = (currentCycleTime % BREATHING_PHASE_DURATION) / BREATHING_PHASE_DURATION;
+
+    outerRing.classList.remove('inhale', 'hold', 'exhale', 'rest');
+
+    let scale = 1.0;
+    if (phaseIndex === 0) {
+        // Phase 1: Inhale (0-4s) - Ring expands smoothly 0.75 -> 1.25
+        scale = 0.75 + (progressInPhase * 0.5);
+        phaseText.innerText = "INHALARE...";
+        outerRing.classList.add('inhale');
+    } else if (phaseIndex === 1) {
+        // Phase 2: Hold (4-8s) - Ring holds at 1.25 with subtle pulse
+        scale = 1.25 + (Math.sin(Date.now() * 0.003) * 0.03);
+        phaseText.innerText = "MENȚINERE...";
+        outerRing.classList.add('hold');
+    } else if (phaseIndex === 2) {
+        // Phase 3: Exhale (8-12s) - Ring contracts smoothly 1.25 -> 0.75
+        scale = 1.25 - (progressInPhase * 0.5);
+        phaseText.innerText = "EXHALARE...";
+        outerRing.classList.add('exhale');
+    } else {
+        // Phase 4: Rest (12-16s) - Ring rests at 0.75
+        scale = 0.75 + (Math.sin(Date.now() * 0.003) * 0.02);
+        phaseText.innerText = "RELAXARE...";
+        outerRing.classList.add('rest');
+    }
+
+    timerText.innerText = `${Math.ceil(phaseTimeRemaining)}s`;
+    outerRing.style.transform = `scale(${scale.toFixed(3)})`;
+}
+
+function getComboMultiplier(count) {
+    if (count < 2) return 1;
+    if (count <= 3) return 2;
+    if (count <= 6) return 3;
+    if (count <= 9) return 5;
+    return 8;
+}
+
+function registerComboHit(bonusCount = 1) {
+    const prevMult = comboMultiplier;
+    comboCount += bonusCount;
+    comboTimer = COMBO_WINDOW;
+    comboMultiplier = getComboMultiplier(comboCount);
+    runMaxCombo = Math.max(runMaxCombo, comboMultiplier);
+
+    if (comboMultiplier > lifetimeStats.highestCombo) {
+        lifetimeStats.highestCombo = comboMultiplier;
+        saveLifetimeStats();
+    }
+
+    if (comboMultiplier > prevMult && comboMultiplier >= 2) {
+        soundManager.playComboStinger(comboMultiplier);
+    }
+    updateComboHUD();
+    checkBadgesAndThemes();
+}
+
+function resetCombo() {
+    comboCount = 0;
+    comboTimer = 0;
+    comboMultiplier = 1;
+    updateComboHUD();
+}
+
+function updateComboHUD() {
+    const badge = document.getElementById('combo-badge');
+    if (!badge) return;
+
+    if (comboCount >= 2) {
+        badge.classList.remove('hidden');
+        badge.innerText = `x${comboMultiplier} COMBO!`;
+
+        badge.classList.remove('combo-tier-1', 'combo-tier-2', 'combo-tier-3');
+        if (comboMultiplier === 2) {
+            badge.classList.add('combo-tier-1');
+        } else if (comboMultiplier >= 3 && comboMultiplier < 5) {
+            badge.classList.add('combo-tier-2');
+        } else if (comboMultiplier >= 5) {
+            badge.classList.add('combo-tier-3');
+        }
+
+        badge.style.animation = 'none';
+        badge.offsetHeight; // force reflow
+        badge.style.animation = null;
+    } else {
+        badge.classList.add('hidden');
+    }
+}
+
+function applyShakeSetting(setting) {
+    shakeSetting = setting;
+    try {
+        localStorage.setItem('orbit_fusion_shake', setting);
+    } catch (e) {
+        console.warn("Could not save shake setting to localStorage", e);
+    }
+    updateShakeButtonUI();
+}
+
+function updateShakeButtonUI() {
+    const btn = document.getElementById('shake-toggle-btn');
+    if (!btn) return;
+    if (shakeSetting === 'off') {
+        btn.innerText = 'OPRIT';
+    } else if (shakeSetting === 'medium') {
+        btn.innerText = 'MEDIU';
+    } else {
+        btn.innerText = 'INTENS';
+    }
+}
 
 // Hexagon (Player Shield) parameters
 let hexRadius = 100;
@@ -260,7 +1059,7 @@ function initStars() {
 
 function initNebulae() {
     const size = Math.min(window.innerWidth, window.innerHeight);
-    const isLight = currentTheme === 'light';
+    const isLight = currentTheme === 'light' || currentTheme === 'light_ether';
     nebulae = [
         {
             x: -window.innerWidth * 0.25,
@@ -279,23 +1078,42 @@ function initNebulae() {
             speed: 0.025
         }
     ];
+
+    // Pre-create cached radial gradients relative to (0,0) for each nebula to eliminate GC allocations
+    nebulae.forEach(neb => {
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, neb.radius);
+        grad.addColorStop(0, neb.color);
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        neb.cachedGrad = grad;
+    });
 }
 
 function drawBackground() {
-    // 1. Draw Nebulae
+    // 0. Draw Theme Radial Background Gradient (Cached)
+    if (!cachedBgGradient && themeStyles.bgGradient && themeStyles.bgGradient.length >= 2) {
+        const maxDim = Math.max(window.innerWidth, window.innerHeight) * 0.8;
+        cachedBgGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, maxDim);
+        cachedBgGradient.addColorStop(0, themeStyles.bgGradient[0]);
+        cachedBgGradient.addColorStop(1, themeStyles.bgGradient[1]);
+    }
+    if (cachedBgGradient) {
+        ctx.save();
+        ctx.fillStyle = cachedBgGradient;
+        ctx.fillRect(-window.innerWidth / 2, -window.innerHeight / 2, window.innerWidth, window.innerHeight);
+        ctx.restore();
+    }
+
+    // 1. Draw Nebulae using pre-computed gradients
     nebulae.forEach(neb => {
         neb.phase += neb.speed * 0.016; // slow orbit phase
         const ox = Math.cos(neb.phase) * 40;
         const oy = Math.sin(neb.phase) * 40;
         
-        const grad = ctx.createRadialGradient(neb.x + ox, neb.y + oy, 0, neb.x + ox, neb.y + oy, neb.radius);
-        grad.addColorStop(0, neb.color);
-        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        
         ctx.save();
-        ctx.fillStyle = grad;
+        ctx.translate(neb.x + ox, neb.y + oy);
+        ctx.fillStyle = neb.cachedGrad || neb.color;
         ctx.beginPath();
-        ctx.arc(neb.x + ox, neb.y + oy, neb.radius, 0, Math.PI * 2);
+        ctx.arc(0, 0, neb.radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
     });
@@ -328,6 +1146,7 @@ class Orb {
         
         // Calculate initial distance and angle from center
         this.distance = Math.hypot(x, y);
+        this.spawnDistance = this.distance || 400;
         this.angle = Math.atan2(y, x);
         
         // Small rotation offset for curved trajectories (adds premium cosmic feel)
@@ -335,8 +1154,12 @@ class Orb {
     }
 
     update(dt) {
+        // Gravitational acceleration curve as orb approaches center core
+        const distRatio = 1.0 - Math.min(1.0, this.distance / this.spawnDistance);
+        const currentSpeed = this.speed * (1 + distRatio * 0.35);
+
         // Move towards center
-        this.distance -= this.speed * dt;
+        this.distance -= currentSpeed * dt;
         
         // Slightly spiral inward
         this.angle += this.curveSpeed * dt;
@@ -345,35 +1168,33 @@ class Orb {
         this.x = Math.cos(this.angle) * this.distance;
         this.y = Math.sin(this.angle) * this.distance;
 
-        // Leave faint trail of tail particles
-        if (Math.random() < 0.35) {
+        // Leave glowing trail particles
+        if (Math.random() < 0.45 && particles.length < MAX_PARTICLES) {
             particles.push(new Particle(
                 this.x, 
                 this.y, 
-                (Math.random() - 0.5) * 15, 
-                (Math.random() - 0.5) * 15, 
+                (Math.random() - 0.5) * 12, 
+                (Math.random() - 0.5) * 12, 
                 COLORS[this.colorIndex].hex, 
-                0.6, 
-                4,
-                0.4
+                0.65, 
+                Math.random() * 2.5 + 1.5,
+                0.6
             ));
         }
     }
 
     draw(ctx) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        
-        // Glowing radial gradient
-        const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2);
-        grad.addColorStop(0, '#ffffff');
-        grad.addColorStop(0.3, COLORS[this.colorIndex].hex);
-        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        
-        ctx.fillStyle = grad;
-        ctx.fill();
-        ctx.restore();
+        if (orbCanvasCache[this.colorIndex]) {
+            const renderSize = this.size * 4;
+            ctx.drawImage(orbCanvasCache[this.colorIndex], this.x - renderSize / 2, this.y - renderSize / 2, renderSize, renderSize);
+        } else {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = COLORS[this.colorIndex] ? COLORS[this.colorIndex].hex : '#ffffff';
+            ctx.fill();
+            ctx.restore();
+        }
     }
 }
 
@@ -490,6 +1311,21 @@ function initGame() {
     orbSpawnRateModifier = 1.0;
     screenShake = 0;
 
+    // Reset Run Mastery Metrics
+    runSuccessfulMatches = 0;
+    runTotalImpacts = 0;
+    runTotalFusions = 0;
+    runMaxCombo = 1;
+    runPlayTimeSeconds = 0;
+
+    // Increment Lifetime Runs
+    lifetimeStats.totalRuns++;
+    saveLifetimeStats();
+    checkBadgesAndThemes();
+
+    resetCombo();
+    updateShakeButtonUI();
+
     orbs = [];
     particles = [];
     shockwaves = [];
@@ -579,6 +1415,7 @@ function realignOrbColors() {
             
             // Generăm particule vizuale cu noua culoare la poziția orbului
             for (let k = 0; k < 8; k++) {
+                if (particles.length >= MAX_PARTICLES) break;
                 const angle = Math.random() * Math.PI * 2;
                 const sp = 20 + Math.random() * 50;
                 particles.push(new Particle(
@@ -598,52 +1435,95 @@ function realignOrbColors() {
 
 function handleOrbImpact(orb, segIdx, orbIdx) {
     const segment = segments[segIdx];
+    runTotalImpacts++;
     
     // Trigger visual scale pulse
     segment.pulse = 1.4;
 
+    // Calculate precision alignment relative to target segment center
+    let relAngle = (orb.angle - hexAngle) % (Math.PI * 2);
+    if (relAngle < 0) relAngle += Math.PI * 2;
+    
+    const segCenterAngle = (segIdx + 0.5) * (Math.PI / 3);
+    let angleOffset = Math.abs(relAngle - segCenterAngle);
+    if (angleOffset > Math.PI) angleOffset = Math.PI * 2 - angleOffset;
+    
+    // Segment width is PI/3 (~0.5236 rad, 60 deg). Within 0.09 rad (~5 deg) is a Perfect central hit!
+    const isPerfect = angleOffset < 0.09;
+
     if (segment.colorIndex === orb.colorIndex) {
-        // MATCH! Color matches
-        soundManager.playMatch();
-        
+        // MATCH! Color matches - extend combo streak
+        runSuccessfulMatches++;
+        registerComboHit(1);
+
         // Level up the segment
         segment.colorIndex = Math.min(COLORS.length - 1, segment.colorIndex + 1);
         segment.health = Math.min(1.0, segment.health + 0.15); // Repair a bit
         
-        // Calculate points
-        const points = 10 * level;
+        // Calculate points scaled by combo multiplier
+        const basePoints = 10 * level;
+        const perfectBonus = isPerfect ? 50 * level : 0;
+        const points = (basePoints + perfectBonus) * comboMultiplier;
         score += points;
         
         // Float text
         const px = Math.cos(orb.angle) * hexRadius;
         const py = Math.sin(orb.angle) * hexRadius;
-        floatingTexts.push(new FloatingText(px, py, `+${points}`, COLORS[orb.colorIndex].hex));
+        const textLabel = isPerfect ? `+${points} Perfect!` : `+${points}`;
+        const textColor = isPerfect ? '#ffdd00' : COLORS[orb.colorIndex].hex;
+        floatingTexts.push(new FloatingText(px, py, textLabel, textColor));
         
-        // Spark particles
-        for (let k = 0; k < 12; k++) {
-            const angle = orb.angle + (Math.random() - 0.5) * 0.8;
-            const sp = 60 + Math.random() * 80;
-            particles.push(new Particle(
-                orb.x, 
-                orb.y, 
-                -Math.cos(angle) * sp, 
-                -Math.sin(angle) * sp, 
-                COLORS[orb.colorIndex].hex, 
-                0.8, 
-                3
-            ));
+        if (isPerfect) {
+            soundManager.playPerfect();
+            lifetimeStats.perfectHitsCount++;
+            saveLifetimeStats();
+            checkBadgesAndThemes();
+            // Golden sparkle particles on Perfect central hit
+            for (let k = 0; k < 20; k++) {
+                if (particles.length >= MAX_PARTICLES) break;
+                const angle = Math.random() * Math.PI * 2;
+                const sp = 80 + Math.random() * 120;
+                particles.push(new Particle(
+                    orb.x, 
+                    orb.y, 
+                    Math.cos(angle) * sp, 
+                    Math.sin(angle) * sp, 
+                    Math.random() < 0.5 ? '#ffdd00' : '#ffffff', 
+                    0.95, 
+                    Math.random() * 3 + 2,
+                    0.9
+                ));
+            }
+        } else {
+            soundManager.playMatch(comboMultiplier);
+            // Spark particles
+            for (let k = 0; k < 12; k++) {
+                if (particles.length >= MAX_PARTICLES) break;
+                const angle = orb.angle + (Math.random() - 0.5) * 0.8;
+                const sp = 60 + Math.random() * 80;
+                particles.push(new Particle(
+                    orb.x, 
+                    orb.y, 
+                    -Math.cos(angle) * sp, 
+                    -Math.sin(angle) * sp, 
+                    COLORS[orb.colorIndex].hex, 
+                    0.8, 
+                    3
+                ));
+            }
         }
 
         // Add XP
-        addXP(10); // Decreased from 15
+        addXP(isPerfect ? 15 : 10);
         
-        // Check for adiacent color fusions
+        // Check for adjacent color fusions
         checkFusions(segIdx);
 
         // Remove orb
         orbs.splice(orbIdx, 1);
     } else {
-        // MISMATCH! Wrong color
+        // MISMATCH! Wrong color - break combo streak
+        resetCombo();
         soundManager.playError();
         screenShake = 15;
         
@@ -661,6 +1541,7 @@ function handleOrbImpact(orb, segIdx, orbIdx) {
 
         // Glitch particles (Red/orange error sparkles)
         for (let k = 0; k < 8; k++) {
+            if (particles.length >= MAX_PARTICLES) break;
             particles.push(new Particle(
                 orb.x, 
                 orb.y, 
@@ -701,10 +1582,16 @@ function checkFusions(originIdx) {
             const segR = segments[right];
 
             // If adjacent segments have the same color, fuse them!
-            // Exclude already maxed out Nova (white) level 5 segments, unless they trigger a special blast
             if (segL.colorIndex === segR.colorIndex && segL.colorIndex < COLORS.length - 1 && segL.colorIndex > 0) {
                 const fusionColorIdx = segL.colorIndex;
+                runTotalFusions++;
+                lifetimeStats.totalFusions++;
+                saveLifetimeStats();
+                checkBadgesAndThemes();
                 
+                // Add to combo streak for fusion
+                registerComboHit(2);
+
                 // Segment L gets upgraded
                 segL.colorIndex = Math.min(COLORS.length - 1, segL.colorIndex + 1);
                 segL.health = 1.0; // Fully restored
@@ -715,13 +1602,13 @@ function checkFusions(originIdx) {
                 segR.health = 1.0;
                 segR.pulse = 0.9;
 
-                // Play satisfying chord
-                soundManager.playFusion();
+                // Play satisfying chord scaled by combo richness
+                soundManager.playFusion(comboMultiplier);
 
-                // Points & XP bonuses
-                const bonus = 40 * level * (fusionColorIdx + 1);
+                // Points & XP bonuses scaled by combo multiplier
+                const bonus = 40 * level * (fusionColorIdx + 1) * comboMultiplier;
                 score += bonus;
-                addXP(20); // Decreased from 30
+                addXP(20);
 
                 // Shockwave at the fusion site (between left & right vertices)
                 const angleBetween = (left * (Math.PI / 3) + right * (Math.PI / 3)) / 2 + hexAngle;
@@ -729,24 +1616,27 @@ function checkFusions(originIdx) {
                 const waveY = Math.sin(angleBetween) * hexRadius;
                 shockwaves.push(new Shockwave(waveX, waveY, 150, COLORS[fusionColorIdx].hex));
                 
-                // Exploding starburst particles
-                for (let k = 0; k < 20; k++) {
+                // Exploding high-impact starburst particles
+                for (let k = 0; k < 25; k++) {
+                    if (particles.length >= MAX_PARTICLES) break;
                     const angle = Math.random() * Math.PI * 2;
-                    const sp = 80 + Math.random() * 150;
+                    const sp = 90 + Math.random() * 180;
+                    const particleColor = Math.random() < 0.3 ? '#ffffff' : COLORS[fusionColorIdx].hex;
                     particles.push(new Particle(
                         waveX, 
                         waveY, 
                         Math.cos(angle) * sp, 
                         Math.sin(angle) * sp, 
-                        COLORS[fusionColorIdx].hex, 
-                        0.9, 
-                        4,
-                        0.8
+                        particleColor, 
+                        0.95, 
+                        Math.random() * 3.5 + 2,
+                        0.7
                     ));
                 }
 
                 // Floating points text
-                floatingTexts.push(new FloatingText(waveX, waveY, `FUSION +${bonus}!`, COLORS[fusionColorIdx + 1].hex));
+                const comboStr = comboMultiplier > 1 ? ` (x${comboMultiplier})` : '';
+                floatingTexts.push(new FloatingText(waveX, waveY, `FUSION +${bonus}!${comboStr}`, COLORS[fusionColorIdx + 1].hex));
 
                 // Special case: If we fused into Nova segment (Level 5, index 5), trigger a mini blast!
                 if (segL.colorIndex === COLORS.length - 1) {
@@ -772,6 +1662,7 @@ function triggerNovaBlast(segIdx) {
         floatingTexts.push(new FloatingText(orb.x, orb.y, "+15", currentTheme === 'light' ? '#1c1c24' : '#ffffff'));
         
         for (let k = 0; k < 8; k++) {
+            if (particles.length >= MAX_PARTICLES) break;
             particles.push(new Particle(
                 orb.x, orb.y, 
                 (Math.random() - 0.5) * 100, 
@@ -794,6 +1685,11 @@ function triggerNovaBlast(segIdx) {
 }
 
 function damageCore(amount) {
+    if (gameMode === 'zen') {
+        stability = 100;
+        updateHUD();
+        return;
+    }
     stability -= amount;
     if (stability <= 0) {
         stability = 0;
@@ -841,6 +1737,7 @@ function levelUp() {
 
     // Dynamic level up screen particles
     for (let k = 0; k < 40; k++) {
+        if (particles.length >= MAX_PARTICLES) break;
         const angle = Math.random() * Math.PI * 2;
         const sp = 100 + Math.random() * 200;
         particles.push(new Particle(
@@ -861,6 +1758,7 @@ function createCoreDamageParticles() {
     soundManager.playError();
     screenShake = 18;
     for (let k = 0; k < 15; k++) {
+        if (particles.length >= MAX_PARTICLES) break;
         const angle = Math.random() * Math.PI * 2;
         const sp = 80 + Math.random() * 120;
         particles.push(new Particle(
@@ -888,8 +1786,9 @@ function spawnOrb() {
     const startX = Math.cos(angle) * spawnDist;
     const startY = Math.sin(angle) * spawnDist;
 
-    // Orb Speed increases with Level
-    const orbSpeed = BASE_ORB_SPEED * (1 + level * 0.08);
+    // Orb Speed increases with Level (softer speed progression in Zen mode)
+    const speedMult = gameMode === 'zen' ? 0.75 : 1.0;
+    const orbSpeed = BASE_ORB_SPEED * (1 + level * 0.08) * speedMult;
 
     // Smart color selection: ONLY spawn colors currently present on the hexagon's segments
     // to guarantee the puzzle is 100% solvable and fair.
@@ -977,22 +1876,22 @@ function drawCore() {
     const pulseFactor = 1 + Math.sin(Date.now() * 0.005) * 0.1;
     const coreRadius = 22 * pulseFactor;
 
-    // Outer gravity glow
-    const outerGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 60 * pulseFactor);
-    outerGrad.addColorStop(0, currentTheme === 'light' ? 'rgba(170, 0, 255, 0.15)' : 'rgba(15, 10, 30, 0.6)');
-    outerGrad.addColorStop(0.5, currentTheme === 'light' ? 'rgba(170, 0, 255, 0.05)' : 'rgba(10, 0, 20, 0.2)');
-    outerGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = outerGrad;
+    // Outer gravity glow (using pre-created coreGlowGrad scaled by pulseFactor)
+    if (!coreGlowGrad) initCoreGrad();
+    ctx.save();
+    ctx.scale(pulseFactor, pulseFactor);
+    ctx.fillStyle = coreGlowGrad;
     ctx.beginPath();
-    ctx.arc(0, 0, 60 * pulseFactor, 0, Math.PI * 2);
+    ctx.arc(0, 0, 60, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
 
     // Dark core void (Singularity effect)
     ctx.beginPath();
     ctx.arc(0, 0, coreRadius, 0, Math.PI * 2);
     ctx.fillStyle = themeStyles.coreFill;
     ctx.shadowBlur = 15;
-    ctx.shadowColor = COLORS[4].hex;
+    ctx.shadowColor = COLORS[4] ? COLORS[4].hex : '#aa00ff';
     ctx.fill();
     ctx.lineWidth = 2;
     ctx.strokeStyle = themeStyles.coreStroke;
@@ -1167,8 +2066,53 @@ function gameOver() {
     document.getElementById('hud').classList.add('hidden');
     
     const goScreen = document.getElementById('game-over-screen');
-    document.getElementById('go-score').innerText = score;
-    document.getElementById('go-level').innerText = level;
+
+    // Calculate Positive Mastery Metrics
+    const precisionPercent = runTotalImpacts > 0 ? Math.round((runSuccessfulMatches / runTotalImpacts) * 100) : 100;
+    const focusScore = Math.round(score * 1.25 + runTotalFusions * 50 + runMaxCombo * 80 + level * 60);
+    const playTimeStr = formatTime(runPlayTimeSeconds);
+
+    if (focusScore > lifetimeStats.highestFocusScore) {
+        lifetimeStats.highestFocusScore = focusScore;
+    }
+    saveLifetimeStats();
+    checkBadgesAndThemes();
+
+    const goTitle = document.getElementById('go-title');
+    const goSubtitle = document.getElementById('go-subtitle');
+    const goFocusScore = document.getElementById('go-focus-score');
+    const goScore = document.getElementById('go-score');
+    const goPrecision = document.getElementById('go-precision');
+    const goFusions = document.getElementById('go-fusions');
+    const goMaxCombo = document.getElementById('go-max-combo');
+    const goPlayTime = document.getElementById('go-play-time');
+    const goLevel = document.getElementById('go-level');
+    const feedbackText = document.getElementById('positive-feedback-text');
+
+    if (goTitle) goTitle.innerText = gameMode === 'zen' ? 'SESIUNE ZEN COMPLETATĂ' : 'REZUMAT MISIUNE & FLUX';
+    if (goSubtitle) goSubtitle.innerText = gameMode === 'zen' ? 'O pauză de reîncărcare în starea de bine!' : 'Sesiune de concentrare finalizată cu succes!';
+    if (goFocusScore) goFocusScore.innerText = focusScore;
+    if (goScore) goScore.innerText = score;
+    if (goPrecision) goPrecision.innerText = `${precisionPercent}%`;
+    if (goFusions) goFusions.innerText = runTotalFusions;
+    if (goMaxCombo) goMaxCombo.innerText = `x${runMaxCombo}`;
+    if (goPlayTime) goPlayTime.innerText = playTimeStr;
+    if (goLevel) goLevel.innerText = level;
+
+    // Positive Feedback Message Selection
+    if (feedbackText) {
+        if (precisionPercent >= 85) {
+            feedbackText.innerText = "🌟 Excelent! Precizia ta de rotire a fost excepțională. Un ritm de joc impecabil!";
+        } else if (runMaxCombo >= 3) {
+            feedbackText.innerText = "🔥 Impresionant! Ai menținut serii valoroase de fuziuni și ai atins starea optimă de Flux.";
+        } else if (runTotalFusions >= 10) {
+            feedbackText.innerText = "⚡ Maestru al energiilor! Ai realizat fuziuni cosmice spectaculoase.";
+        } else if (gameMode === 'zen') {
+            feedbackText.innerText = "🧘 Relaxant & Eficient! Ți-ai oferit o sesiune de joc fără stres, excelentă pentru minte.";
+        } else {
+            feedbackText.innerText = "👏 Bravo! Fiecare sesiune îți îmbunătățește atenția, focusul și timpii de reacție.";
+        }
+    }
     
     if (isNewHigh) {
         document.getElementById('new-high-score-badge').classList.remove('hidden');
@@ -1182,7 +2126,43 @@ function gameOver() {
 // ==========================================================================
 
 function update(dt) {
+    // Session duration tracking & HUD update
+    sessionElapsedSeconds += dt;
+    const sessionTimeVal = document.getElementById('session-time-val');
+    if (sessionTimeVal) {
+        sessionTimeVal.innerText = formatTime(sessionElapsedSeconds);
+    }
+
+    // 20-minute rest reminder threshold check
+    if (sessionElapsedSeconds >= nextRestReminderTime) {
+        showRestReminder();
+        nextRestReminderTime += REST_REMINDER_INTERVAL;
+    }
+
+    if (gameState === 'playing') {
+        runPlayTimeSeconds += dt;
+        lifetimeStats.totalPlayTimeSeconds += dt;
+        if (gameMode === 'zen') {
+            lifetimeStats.zenPlayTimeSeconds += dt;
+        }
+        // Save and check criteria periodically (every 5s)
+        if (Math.floor(lifetimeStats.totalPlayTimeSeconds) % 5 === 0) {
+            saveLifetimeStats();
+            checkBadgesAndThemes();
+        }
+    } else if (gameState === 'paused') {
+        updateBreathingWidget(dt);
+    }
+
     if (gameState !== 'playing' && gameState !== 'start') return;
+
+    // Combo timer countdown
+    if (comboTimer > 0) {
+        comboTimer -= dt;
+        if (comboTimer <= 0) {
+            resetCombo();
+        }
+    }
 
     // Apply Screen Shake decay
     if (screenShake > 0) {
@@ -1250,6 +2230,19 @@ function update(dt) {
     shockwaves = shockwaves.filter(s => s.alpha > 0);
     floatingTexts = floatingTexts.filter(t => t.alpha > 0);
 
+    // Cap array lists to strictly enforce memory limits and eliminate GC pressure
+    if (particles.length > MAX_PARTICLES) {
+        particles = particles.slice(particles.length - MAX_PARTICLES);
+    }
+    if (shockwaves.length > MAX_SHOCKWAVES) {
+        shockwaves = shockwaves.slice(shockwaves.length - MAX_SHOCKWAVES);
+    }
+    if (floatingTexts.length > MAX_FLOATING_TEXTS) {
+        floatingTexts = floatingTexts.slice(floatingTexts.length - MAX_FLOATING_TEXTS);
+    }
+    // Filter out-of-bounds orbs
+    orbs = orbs.filter(orb => orb.distance <= 2000);
+
     // Handle collision check
     checkCollisions();
 
@@ -1283,10 +2276,13 @@ function draw() {
     // Center coordinates context
     ctx.save();
     
-    // Apply Screen Shake if mismatched colors
-    if (screenShake > 0) {
-        const dx = (Math.random() - 0.5) * screenShake;
-        const dy = (Math.random() - 0.5) * screenShake;
+    // Apply Screen Shake with intensity setting modifier
+    let shakeMult = shakeSetting === 'off' ? 0 : (shakeSetting === 'medium' ? 0.5 : 1.0);
+    let effectiveShake = screenShake * shakeMult;
+
+    if (effectiveShake > 0) {
+        const dx = (Math.random() - 0.5) * effectiveShake;
+        const dy = (Math.random() - 0.5) * effectiveShake;
         ctx.translate(window.innerWidth / 2 + dx, window.innerHeight / 2 + dy);
     } else {
         ctx.translate(window.innerWidth / 2, window.innerHeight / 2);
@@ -1335,6 +2331,7 @@ function resizeCanvas() {
     canvas.width = width * dpr;
     canvas.height = height * dpr;
     
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
     
     // Hexagon radius dynamic adjustments based on screen scale
@@ -1342,8 +2339,11 @@ function resizeCanvas() {
     if (hexRadius < 75) hexRadius = 75;
     if (hexRadius > 130) hexRadius = 130;
 
+    cachedBgGradient = null;
     initStars();
     initNebulae();
+    initOrbCache();
+    initCoreGrad();
 }
 
 // Key Listeners
@@ -1365,39 +2365,104 @@ window.addEventListener('keyup', (e) => {
     if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.Right = false;
 });
 
-// Mouse & Touch Controls (Split Screen Mobile support)
-function handleControlStart(clientX) {
+// Pointer & Touch Controls (Direct Touch Drag Angle Tracking + Split Screen Taps)
+function getAngleFromCenter(clientX, clientY) {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    return Math.atan2(clientY - centerY, clientX - centerX);
+}
+
+function handlePointerStart(clientX, clientY, target) {
     if (gameState !== 'playing') return;
-    const midPoint = window.innerWidth / 2;
-    if (clientX < midPoint) {
-        keys.Left = true;
-    } else {
-        keys.Right = true;
+    if (target && target.closest && (target.closest('.hud-controls') || target.closest('.action-btn') || target.closest('.settings-container'))) return;
+    
+    isInputActive = true;
+    isDragging = false;
+    dragStartX = clientX;
+    dragStartY = clientY;
+    lastTouchAngle = getAngleFromCenter(clientX, clientY);
+}
+
+function handlePointerMove(clientX, clientY, target) {
+    if (!isInputActive || gameState !== 'playing') return;
+
+    const distMoved = Math.hypot(clientX - dragStartX, clientY - dragStartY);
+    if (distMoved > 8) {
+        isDragging = true;
+    }
+
+    if (isDragging) {
+        const currentAngle = getAngleFromCenter(clientX, clientY);
+        let delta = currentAngle - lastTouchAngle;
+        if (delta > Math.PI) delta -= Math.PI * 2;
+        if (delta < -Math.PI) delta += Math.PI * 2;
+
+        hexAngle += delta;
+        lastTouchAngle = currentAngle;
     }
 }
 
-function handleControlEnd() {
+function handlePointerEnd() {
+    if (!isInputActive) return;
+    
+    // If user tapped without dragging, trigger split-screen rotation
+    if (!isDragging && gameState === 'playing') {
+        const midPoint = window.innerWidth / 2;
+        if (dragStartX < midPoint) {
+            keys.Left = true;
+            setTimeout(() => { keys.Left = false; }, 150);
+        } else {
+            keys.Right = true;
+            setTimeout(() => { keys.Right = false; }, 150);
+        }
+    }
+
+    isInputActive = false;
+    isDragging = false;
     keys.Left = false;
     keys.Right = false;
 }
 
 window.addEventListener('mousedown', (e) => {
-    // Don't trigger movement if clicking HUD buttons (mute, pause, start buttons)
-    if (e.target.closest('.hud-controls') || e.target.closest('.action-btn')) return;
-    handleControlStart(e.clientX);
+    handlePointerStart(e.clientX, e.clientY, e.target);
 });
-window.addEventListener('mouseup', handleControlEnd);
+
+window.addEventListener('mousemove', (e) => {
+    handlePointerMove(e.clientX, e.clientY, e.target);
+});
+
+window.addEventListener('mouseup', () => {
+    handlePointerEnd();
+});
 
 window.addEventListener('touchstart', (e) => {
-    if (e.target.closest('.hud-controls') || e.target.closest('.action-btn')) return;
-    // Prevent default scroll behaviors
-    e.preventDefault();
-    handleControlStart(e.touches[0].clientX);
-}, { passive: false });
+    if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        handlePointerStart(touch.clientX, touch.clientY, e.target);
+    }
+}, { passive: true });
 
-window.addEventListener('touchend', (e) => {
-    handleControlEnd();
+window.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        handlePointerMove(touch.clientX, touch.clientY, e.target);
+    }
+}, { passive: true });
+
+window.addEventListener('touchend', () => {
+    handlePointerEnd();
 });
+
+// Screen Shake Toggle UI Listener
+const shakeBtn = document.getElementById('shake-toggle-btn');
+if (shakeBtn) {
+    shakeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundManager.init();
+        const nextSetting = shakeSetting === 'intense' ? 'medium' : (shakeSetting === 'medium' ? 'off' : 'intense');
+        applyShakeSetting(nextSetting);
+    });
+}
 
 // UI Event Listeners
 document.getElementById('start-btn').addEventListener('click', () => {
@@ -1422,6 +2487,8 @@ document.getElementById('restart-btn').addEventListener('click', () => {
 function pauseGame() {
     if (gameState !== 'playing') return;
     gameState = 'paused';
+    const hud = document.getElementById('hud');
+    if (hud) hud.classList.add('hidden');
     document.getElementById('pause-screen').classList.remove('hidden');
     
     // Change pause toggle icon to play icon
@@ -1432,6 +2499,8 @@ function resumeGame() {
     if (gameState !== 'paused') return;
     gameState = 'playing';
     document.getElementById('pause-screen').classList.add('hidden');
+    const hud = document.getElementById('hud');
+    if (hud) hud.classList.remove('hidden');
     
     // Change pause toggle icon to pause icon
     document.getElementById('pause-icon').setAttribute('d', 'M14,19H18V5H14M6,19H10V5H6V19Z');
@@ -1468,12 +2537,47 @@ document.getElementById('resume-btn').addEventListener('click', () => {
 document.getElementById('theme-toggle').addEventListener('click', (e) => {
     e.stopPropagation();
     soundManager.init();
-    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    applyTheme(nextTheme);
-    try {
-        localStorage.setItem('orbit_fusion_theme', nextTheme);
-    } catch (err) {
-        console.warn("Could not save theme to localStorage", err);
+    openModal('theme-modal');
+});
+
+// Progression Modals Open Listeners
+const openThemeBtn = document.getElementById('open-theme-btn');
+if (openThemeBtn) openThemeBtn.addEventListener('click', () => { soundManager.init(); openModal('theme-modal'); });
+
+const openBadgesBtn = document.getElementById('open-badges-btn');
+if (openBadgesBtn) openBadgesBtn.addEventListener('click', () => { soundManager.init(); openModal('badges-modal'); });
+
+const openStatsBtn = document.getElementById('open-stats-btn');
+if (openStatsBtn) openStatsBtn.addEventListener('click', () => { soundManager.init(); openModal('stats-modal'); });
+
+const pauseThemeBtn = document.getElementById('pause-theme-select-btn');
+if (pauseThemeBtn) pauseThemeBtn.addEventListener('click', () => { soundManager.init(); openModal('theme-modal'); });
+
+const pauseBadgesBtn = document.getElementById('pause-badges-btn');
+if (pauseBadgesBtn) pauseBadgesBtn.addEventListener('click', () => { soundManager.init(); openModal('badges-modal'); });
+
+const pauseStatsBtn = document.getElementById('pause-stats-btn');
+if (pauseStatsBtn) pauseStatsBtn.addEventListener('click', () => { soundManager.init(); openModal('stats-modal'); });
+
+// Modals Close Listeners
+const themeCloseBtn = document.getElementById('theme-close-btn');
+if (themeCloseBtn) themeCloseBtn.addEventListener('click', () => closeModal('theme-modal'));
+
+const badgesCloseBtn = document.getElementById('badges-close-btn');
+if (badgesCloseBtn) badgesCloseBtn.addEventListener('click', () => closeModal('badges-modal'));
+
+const statsCloseBtn = document.getElementById('stats-close-btn');
+if (statsCloseBtn) statsCloseBtn.addEventListener('click', () => closeModal('stats-modal'));
+
+// Close modals when clicking backdrop overlay
+['theme-modal', 'badges-modal', 'stats-modal'].forEach(id => {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal(id);
+            }
+        });
     }
 });
 
@@ -1490,9 +2594,69 @@ window.addEventListener('blur', () => {
     }
 });
 
+// Rest Reminder Button Listeners
+const restPauseBtn = document.getElementById('rest-pause-btn');
+if (restPauseBtn) {
+    restPauseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundManager.init();
+        hideRestReminder();
+        if (gameState === 'playing') {
+            pauseGame();
+        }
+    });
+}
+
+const restContinueBtn = document.getElementById('rest-continue-btn');
+if (restContinueBtn) {
+    restContinueBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundManager.init();
+        hideRestReminder();
+    });
+}
+
+// Game Mode Selector Listeners
+const modeClassicBtn = document.getElementById('mode-classic-btn');
+if (modeClassicBtn) {
+    modeClassicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundManager.init();
+        setGameMode('classic');
+    });
+}
+
+const modeZenBtn = document.getElementById('mode-zen-btn');
+if (modeZenBtn) {
+    modeZenBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundManager.init();
+        setGameMode('zen');
+    });
+}
+
+const modeToggleBtn = document.getElementById('mode-toggle-btn');
+if (modeToggleBtn) {
+    modeToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundManager.init();
+        const nextMode = gameMode === 'classic' ? 'zen' : 'classic';
+        setGameMode(nextMode);
+    });
+}
+
 // Start engine
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
+
+// Load Persistence Data
+loadLifetimeStats();
+loadUnlockedBadges();
+loadUnlockedThemes();
+checkBadgesAndThemes();
+
+// Detect and apply saved game mode
+setGameMode(gameMode);
 
 // Initialize the game state so that autopilot starts immediately behind the start panel
 initGame();
@@ -1501,12 +2665,12 @@ gameState = 'start';
 // Load and render history UI
 updateHistoryUI();
 
-// Detect and apply theme (respects prefers-color-scheme by default)
-let savedTheme = 'dark';
+// Detect and apply theme (respects saved choice or defaults to cyber_neon)
+let savedTheme = 'cyber_neon';
 try {
-    savedTheme = localStorage.getItem('orbit_fusion_theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    savedTheme = localStorage.getItem('orbit_fusion_theme') || 'cyber_neon';
 } catch (e) {
-    savedTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    savedTheme = 'cyber_neon';
 }
 applyTheme(savedTheme);
 
