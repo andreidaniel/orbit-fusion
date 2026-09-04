@@ -1,0 +1,13 @@
+{
+  "name": "Orbit Fusion - Joc arcade cosmic",
+  "short_name": "Orbit Fusion",
+  "description": "Rotește hexagonul, potrivește culorile și construiește combo-uri cosmice.",
+  "lang": "ro",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050508",
+  "theme_color": "#050508",
+  "categories": ["games", "entertainment"]
+}

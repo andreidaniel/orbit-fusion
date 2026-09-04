@@ -522,15 +522,31 @@ function renderThemesGrid() {
     });
 }
 
+let modalReturnState = null;
+let lastFocusedElement = null;
+
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         if (modalId === 'badges-modal') renderBadgesGrid();
         if (modalId === 'stats-modal') renderStatsModal();
         if (modalId === 'theme-modal') renderThemesGrid();
+
+        modalReturnState = gameState;
+        lastFocusedElement = document.activeElement;
+        if (gameState === 'playing') {
+            gameState = 'paused';
+        }
+
         const hud = document.getElementById('hud');
         if (hud) hud.classList.add('hidden');
         modal.classList.remove('hidden');
+        modal.setAttribute('aria-hidden', 'false');
+
+        requestAnimationFrame(() => {
+            const focusTarget = modal.querySelector('.close-btn, .modal-panel');
+            if (focusTarget) focusTarget.focus();
+        });
     }
 }
 
@@ -538,10 +554,20 @@ function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.add('hidden');
-        if (gameState === 'playing') {
+        modal.setAttribute('aria-hidden', 'true');
+
+        if (modalReturnState === 'playing') {
+            gameState = 'playing';
+            lastTime = performance.now();
             const hud = document.getElementById('hud');
             if (hud) hud.classList.remove('hidden');
         }
+
+        if (lastFocusedElement && lastFocusedElement.isConnected) {
+            lastFocusedElement.focus();
+        }
+        modalReturnState = null;
+        lastFocusedElement = null;
     }
 }
 
@@ -572,12 +598,17 @@ class SoundManager {
     toggleMute() {
         this.muted = !this.muted;
         const icon = document.getElementById('sound-icon');
+        const button = document.getElementById('sound-toggle');
         if (this.muted) {
             // Change SVG to Mute icon
             icon.innerHTML = '<path fill="currentColor" d="M12,4L9.91,6.09L12,8.18M19,12C19,11.05 18.7,10.19 18.19,9.5L19.64,8.05C20.5,9.19 21,10.53 21,12C21,16.28 18.07,19.86 14,20.77V18.71C16.89,17.85 19,15.17 19,12M3,2.27L1.86,3.41L5.89,7.44L3,9H7L12,4V9.56L14,11.56V7.97C15.5,8.71 16.5,10.23 16.5,12C16.5,12.7 16.32,13.36 16,13.93L17.5,15.43C18.1,14.43 18.5,13.26 18.5,12A6.5,6.5 0 0,0 12,5.5V3.23C16.07,4.14 19,7.72 19,12C19,12.87 18.84,13.72 18.54,14.5L19.98,15.94C20.63,14.77 21,13.43 21,12C21,7.72 18.07,4.14 14,3.23V5.5L16.5,8M12,4L9.91,6.09L12,8.18M4.27,3L3,4.27L7.73,9H3V15H7L12,20V13.27L16.25,17.52C15.58,18.04 14.83,18.44 14,18.71V20.77C15.38,20.44 16.63,19.79 17.69,18.96L19.73,21L21,19.73L4.27,3Z"/>';
         } else {
             // Change SVG to Sound High icon
             icon.innerHTML = '<path fill="currentColor" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18.07,19.86 21,16.28 21,12C21,7.72 18.07,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.77 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>';
+        }
+        if (button) {
+            button.setAttribute('aria-label', this.muted ? 'Pornește sunetul' : 'Oprește sunetul');
+            button.setAttribute('aria-pressed', this.muted ? 'true' : 'false');
         }
         return this.muted;
     }
@@ -727,9 +758,9 @@ let gameState = 'start'; // 'start', 'playing', 'game_over', 'paused'
 let screenShake = 0;
 
 // Milestone 3 (R2): Mindful Gaming & Zen State Variables
-let sessionStartTime = Date.now();
 let sessionElapsedSeconds = 0;
 let runPlayTimeSeconds = 0;
+let statsSaveAccumulator = 0;
 const REST_REMINDER_INTERVAL = 20 * 60; // 20 minutes in seconds (1200s)
 let nextRestReminderTime = REST_REMINDER_INTERVAL;
 
@@ -766,9 +797,10 @@ try {
 }
 
 // Strict Memory Limit Caps (eliminates GC pressure & micro-stutters)
-const MAX_PARTICLES = 250;
+let maxParticles = 250;
 const MAX_SHOCKWAVES = 20;
 const MAX_FLOATING_TEXTS = 40;
+const reducedMotionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // High-Performance Offscreen Canvas & Gradient Caches for 60 FPS
 let cachedBgGradient = null;
@@ -777,11 +809,11 @@ let coreGlowGrad = null;
 
 function initOrbCache() {
     orbCanvasCache = [];
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth <= 800 ? 1.5 : 2);
     const orbSize = 7;
-    const canvasSize = Math.ceil(orbSize * 4 * Math.min(dpr, 2));
+    const canvasSize = Math.ceil(orbSize * 4 * dpr);
     const center = canvasSize / 2;
-    const drawRadius = orbSize * Math.min(dpr, 2);
+    const drawRadius = orbSize * dpr;
 
     COLORS.forEach((colorObj, idx) => {
         const offCanvas = document.createElement('canvas');
@@ -824,6 +856,7 @@ let lastTouchAngle = 0;
 
 // Timing helper variables
 let lastTime = 0;
+let lastRenderTime = 0;
 let spawnTimer = 0;
 let orbSpawnRateModifier = 1.0;
 
@@ -1045,7 +1078,8 @@ function initStars() {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const count = Math.floor((width * height) / 10000); // density based on resolution
-    for (let i = 0; i < Math.max(70, count); i++) {
+    const minimumStars = width <= 800 ? 45 : 70;
+    for (let i = 0; i < Math.max(minimumStars, count); i++) {
         stars.push({
             x: (Math.random() - 0.5) * width * 1.5,
             y: (Math.random() - 0.5) * height * 1.5,
@@ -1089,6 +1123,8 @@ function initNebulae() {
 }
 
 function drawBackground() {
+    const now = performance.now() * 0.001;
+
     // 0. Draw Theme Radial Background Gradient (Cached)
     if (!cachedBgGradient && themeStyles.bgGradient && themeStyles.bgGradient.length >= 2) {
         const maxDim = Math.max(window.innerWidth, window.innerHeight) * 0.8;
@@ -1105,9 +1141,8 @@ function drawBackground() {
 
     // 1. Draw Nebulae using pre-computed gradients
     nebulae.forEach(neb => {
-        neb.phase += neb.speed * 0.016; // slow orbit phase
-        const ox = Math.cos(neb.phase) * 40;
-        const oy = Math.sin(neb.phase) * 40;
+        const ox = Math.cos(neb.phase + now * neb.speed) * 40;
+        const oy = Math.sin(neb.phase + now * neb.speed) * 40;
         
         ctx.save();
         ctx.translate(neb.x + ox, neb.y + oy);
@@ -1121,7 +1156,7 @@ function drawBackground() {
     // 2. Draw Twinkling Stars
     ctx.save();
     stars.forEach(star => {
-        const currentAlpha = Math.max(0.1, star.alpha + Math.sin(Date.now() * 0.001 * star.twinkleSpeed + star.phase) * 0.25);
+        const currentAlpha = Math.max(0.1, star.alpha + Math.sin(now * star.twinkleSpeed + star.phase) * 0.25);
         ctx.globalAlpha = currentAlpha;
         
         ctx.beginPath();
@@ -1135,6 +1170,36 @@ function drawBackground() {
 // ==========================================================================
 // 4. CLASE GAMEPLAY (Orbi, Particule, Shockwaves, Text)
 // ==========================================================================
+
+function drawOrbColorMarker(drawContext, x, y, colorIndex) {
+    drawContext.save();
+    drawContext.globalAlpha = 0.9;
+    drawContext.shadowBlur = 0;
+    drawContext.fillStyle = '#050508';
+    drawContext.font = '800 7px "Plus Jakarta Sans", sans-serif';
+    drawContext.textAlign = 'center';
+    drawContext.textBaseline = 'middle';
+    drawContext.fillText(String(colorIndex + 1), x, y + 0.5);
+    drawContext.restore();
+}
+
+function drawSegmentColorMarker(drawContext, x, y, colorIndex) {
+    const isLight = currentTheme === 'light' || currentTheme === 'light_ether';
+    drawContext.save();
+    drawContext.globalAlpha = 0.88;
+    drawContext.shadowBlur = 0;
+    drawContext.setLineDash([]);
+    drawContext.beginPath();
+    drawContext.arc(x, y, 6, 0, Math.PI * 2);
+    drawContext.fillStyle = isLight ? 'rgba(255, 255, 255, 0.9)' : 'rgba(5, 5, 8, 0.84)';
+    drawContext.fill();
+    drawContext.fillStyle = isLight ? '#111827' : '#f7fbff';
+    drawContext.font = '800 8px "Plus Jakarta Sans", sans-serif';
+    drawContext.textAlign = 'center';
+    drawContext.textBaseline = 'middle';
+    drawContext.fillText(String(colorIndex + 1), x, y + 0.5);
+    drawContext.restore();
+}
 
 class Orb {
     constructor(x, y, colorIndex, speed) {
@@ -1169,7 +1234,8 @@ class Orb {
         this.y = Math.sin(this.angle) * this.distance;
 
         // Leave glowing trail particles
-        if (Math.random() < 0.45 && particles.length < MAX_PARTICLES) {
+        const trailChance = Math.min(1, dt * 27); // Same visual density at 60/90/120 Hz.
+        if (Math.random() < trailChance && particles.length < maxParticles) {
             particles.push(new Particle(
                 this.x, 
                 this.y, 
@@ -1195,6 +1261,8 @@ class Orb {
             ctx.fill();
             ctx.restore();
         }
+
+        drawOrbColorMarker(ctx, this.x, this.y, this.colorIndex);
     }
 }
 
@@ -1230,7 +1298,7 @@ class Particle {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 6;
         ctx.shadowColor = this.color;
         ctx.fill();
         ctx.restore();
@@ -1261,7 +1329,7 @@ class Shockwave {
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.strokeStyle = this.color;
         ctx.lineWidth = 3;
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = 11;
         ctx.shadowColor = this.color;
         ctx.stroke();
         ctx.restore();
@@ -1299,7 +1367,7 @@ class FloatingText {
 // 5. INIȚIALIZARE JOC & LOGICĂ RESTART
 // ==========================================================================
 
-function initGame() {
+function initGame(trackRun = true) {
     score = 0;
     level = 1;
     xp = 0;
@@ -1317,11 +1385,14 @@ function initGame() {
     runTotalFusions = 0;
     runMaxCombo = 1;
     runPlayTimeSeconds = 0;
+    statsSaveAccumulator = 0;
 
     // Increment Lifetime Runs
-    lifetimeStats.totalRuns++;
-    saveLifetimeStats();
-    checkBadgesAndThemes();
+    if (trackRun) {
+        lifetimeStats.totalRuns++;
+        saveLifetimeStats();
+        checkBadgesAndThemes();
+    }
 
     resetCombo();
     updateShakeButtonUI();
@@ -1415,7 +1486,7 @@ function realignOrbColors() {
             
             // Generăm particule vizuale cu noua culoare la poziția orbului
             for (let k = 0; k < 8; k++) {
-                if (particles.length >= MAX_PARTICLES) break;
+                if (particles.length >= maxParticles) break;
                 const angle = Math.random() * Math.PI * 2;
                 const sp = 20 + Math.random() * 50;
                 particles.push(new Particle(
@@ -1480,7 +1551,7 @@ function handleOrbImpact(orb, segIdx, orbIdx) {
             checkBadgesAndThemes();
             // Golden sparkle particles on Perfect central hit
             for (let k = 0; k < 20; k++) {
-                if (particles.length >= MAX_PARTICLES) break;
+                if (particles.length >= maxParticles) break;
                 const angle = Math.random() * Math.PI * 2;
                 const sp = 80 + Math.random() * 120;
                 particles.push(new Particle(
@@ -1498,7 +1569,7 @@ function handleOrbImpact(orb, segIdx, orbIdx) {
             soundManager.playMatch(comboMultiplier);
             // Spark particles
             for (let k = 0; k < 12; k++) {
-                if (particles.length >= MAX_PARTICLES) break;
+                if (particles.length >= maxParticles) break;
                 const angle = orb.angle + (Math.random() - 0.5) * 0.8;
                 const sp = 60 + Math.random() * 80;
                 particles.push(new Particle(
@@ -1541,7 +1612,7 @@ function handleOrbImpact(orb, segIdx, orbIdx) {
 
         // Glitch particles (Red/orange error sparkles)
         for (let k = 0; k < 8; k++) {
-            if (particles.length >= MAX_PARTICLES) break;
+            if (particles.length >= maxParticles) break;
             particles.push(new Particle(
                 orb.x, 
                 orb.y, 
@@ -1618,7 +1689,7 @@ function checkFusions(originIdx) {
                 
                 // Exploding high-impact starburst particles
                 for (let k = 0; k < 25; k++) {
-                    if (particles.length >= MAX_PARTICLES) break;
+                    if (particles.length >= maxParticles) break;
                     const angle = Math.random() * Math.PI * 2;
                     const sp = 90 + Math.random() * 180;
                     const particleColor = Math.random() < 0.3 ? '#ffffff' : COLORS[fusionColorIdx].hex;
@@ -1662,7 +1733,7 @@ function triggerNovaBlast(segIdx) {
         floatingTexts.push(new FloatingText(orb.x, orb.y, "+15", currentTheme === 'light' ? '#1c1c24' : '#ffffff'));
         
         for (let k = 0; k < 8; k++) {
-            if (particles.length >= MAX_PARTICLES) break;
+            if (particles.length >= maxParticles) break;
             particles.push(new Particle(
                 orb.x, orb.y, 
                 (Math.random() - 0.5) * 100, 
@@ -1737,7 +1808,7 @@ function levelUp() {
 
     // Dynamic level up screen particles
     for (let k = 0; k < 40; k++) {
-        if (particles.length >= MAX_PARTICLES) break;
+        if (particles.length >= maxParticles) break;
         const angle = Math.random() * Math.PI * 2;
         const sp = 100 + Math.random() * 200;
         particles.push(new Particle(
@@ -1758,7 +1829,7 @@ function createCoreDamageParticles() {
     soundManager.playError();
     screenShake = 18;
     for (let k = 0; k < 15; k++) {
-        if (particles.length >= MAX_PARTICLES) break;
+        if (particles.length >= maxParticles) break;
         const angle = Math.random() * Math.PI * 2;
         const sp = 80 + Math.random() * 120;
         particles.push(new Particle(
@@ -1778,7 +1849,8 @@ function createCoreDamageParticles() {
 // ==========================================================================
 
 function spawnOrb() {
-    if (gameState !== 'playing' && gameState !== 'start') return;
+    // Menus keep the lightweight animated backdrop, but skip gameplay physics.
+    if (gameState !== 'playing') return;
 
     // Angle of spawn (from outside the screen)
     const angle = Math.random() * Math.PI * 2;
@@ -1890,7 +1962,7 @@ function drawCore() {
     ctx.beginPath();
     ctx.arc(0, 0, coreRadius, 0, Math.PI * 2);
     ctx.fillStyle = themeStyles.coreFill;
-    ctx.shadowBlur = 15;
+    ctx.shadowBlur = 11;
     ctx.shadowColor = COLORS[4] ? COLORS[4].hex : '#aa00ff';
     ctx.fill();
     ctx.lineWidth = 2;
@@ -1936,7 +2008,7 @@ function drawHexagon() {
         }
 
         // Segment glow intensity scales with segment.pulse
-        ctx.shadowBlur = 10 * segment.pulse;
+        ctx.shadowBlur = 7.5 * segment.pulse;
         ctx.shadowColor = color.hex;
         
         // Mismatch/health dimming
@@ -1949,6 +2021,10 @@ function drawHexagon() {
         ctx.strokeStyle = 'rgba(255,255,255,0.015)';
         ctx.lineWidth = 1;
         ctx.stroke();
+
+        const markerX = ((p1.x + p2.x) / 2) * 0.87;
+        const markerY = ((p1.y + p2.y) / 2) * 0.87;
+        drawSegmentColorMarker(ctx, markerX, markerY, segment.colorIndex);
 
         // Slow return pulse scale to 1.0 (smooth return after hits)
         if (segment.pulse > 1.0) {
@@ -2126,27 +2202,30 @@ function gameOver() {
 // ==========================================================================
 
 function update(dt) {
-    // Session duration tracking & HUD update
-    sessionElapsedSeconds += dt;
-    const sessionTimeVal = document.getElementById('session-time-val');
-    if (sessionTimeVal) {
-        sessionTimeVal.innerText = formatTime(sessionElapsedSeconds);
-    }
-
-    // 20-minute rest reminder threshold check
-    if (sessionElapsedSeconds >= nextRestReminderTime) {
-        showRestReminder();
-        nextRestReminderTime += REST_REMINDER_INTERVAL;
-    }
-
     if (gameState === 'playing') {
+        // Count active play only, so menus and background tabs do not inflate the timer.
+        sessionElapsedSeconds += dt;
         runPlayTimeSeconds += dt;
         lifetimeStats.totalPlayTimeSeconds += dt;
+        statsSaveAccumulator += dt;
+
+        const sessionTimeVal = document.getElementById('session-time-val');
+        if (sessionTimeVal) {
+            sessionTimeVal.innerText = formatTime(sessionElapsedSeconds);
+        }
+
+        if (sessionElapsedSeconds >= nextRestReminderTime) {
+            showRestReminder();
+            nextRestReminderTime += REST_REMINDER_INTERVAL;
+        }
+
         if (gameMode === 'zen') {
             lifetimeStats.zenPlayTimeSeconds += dt;
         }
-        // Save and check criteria periodically (every 5s)
-        if (Math.floor(lifetimeStats.totalPlayTimeSeconds) % 5 === 0) {
+
+        // Persist once every five seconds instead of once per frame during that second.
+        if (statsSaveAccumulator >= 5) {
+            statsSaveAccumulator %= 5;
             saveLifetimeStats();
             checkBadgesAndThemes();
         }
@@ -2170,54 +2249,12 @@ function update(dt) {
         if (screenShake < 0) screenShake = 0;
     }
 
-    if (gameState === 'start') {
-        // Autopilot / Attract Mode: rotate hexagon automatically to catch spheres
-        if (orbs.length === 0) {
-            hexAngle += 0.25 * dt; // slow default rotation
-        } else {
-            // Find the closest sphere
-            let nearestOrb = null;
-            let minDist = Infinity;
-            orbs.forEach(orb => {
-                if (orb.distance < minDist) {
-                    minDist = orb.distance;
-                    nearestOrb = orb;
-                }
-            });
-
-            if (nearestOrb) {
-                // Find matching color segment index
-                let matchIdx = -1;
-                for (let i = 0; i < 6; i++) {
-                    if (segments[i].colorIndex === nearestOrb.colorIndex) {
-                        matchIdx = i;
-                        break;
-                    }
-                }
-                
-                if (matchIdx === -1) matchIdx = 0;
-
-                // Target hex angle to align matching segment with sphere angle
-                const targetAngle = nearestOrb.angle - matchIdx * (Math.PI / 3);
-                
-                // Shortest path angle difference interpolation
-                let diff = (targetAngle - hexAngle) % (Math.PI * 2);
-                if (diff < -Math.PI) diff += Math.PI * 2;
-                if (diff > Math.PI) diff -= Math.PI * 2;
-                
-                hexAngle += diff * 5.0 * dt;
-            }
-        }
-    } else {
-        // Keyboard controls input logic
-        hexTargetSpeed = 0;
-        if (keys.Left) hexTargetSpeed = -HEX_MAX_SPEED;
-        if (keys.Right) hexTargetSpeed = HEX_MAX_SPEED;
-
-        // Apply rotation friction and acceleration
-        hexCurrentSpeed += (hexTargetSpeed - hexCurrentSpeed) * HEX_ACCEL;
-        hexAngle += hexCurrentSpeed * dt;
-    }
+    // Keyboard, touch-button and drag rotation share the same acceleration model.
+    hexTargetSpeed = 0;
+    if (keys.Left) hexTargetSpeed = -HEX_MAX_SPEED;
+    if (keys.Right) hexTargetSpeed = HEX_MAX_SPEED;
+    hexCurrentSpeed += (hexTargetSpeed - hexCurrentSpeed) * HEX_ACCEL;
+    hexAngle += hexCurrentSpeed * dt;
 
     // Rotate orbs, particles, shockwaves
     orbs.forEach(orb => orb.update(dt));
@@ -2231,8 +2268,8 @@ function update(dt) {
     floatingTexts = floatingTexts.filter(t => t.alpha > 0);
 
     // Cap array lists to strictly enforce memory limits and eliminate GC pressure
-    if (particles.length > MAX_PARTICLES) {
-        particles = particles.slice(particles.length - MAX_PARTICLES);
+    if (particles.length > maxParticles) {
+        particles = particles.slice(particles.length - maxParticles);
     }
     if (shockwaves.length > MAX_SHOCKWAVES) {
         shockwaves = shockwaves.slice(shockwaves.length - MAX_SHOCKWAVES);
@@ -2277,7 +2314,7 @@ function draw() {
     ctx.save();
     
     // Apply Screen Shake with intensity setting modifier
-    let shakeMult = shakeSetting === 'off' ? 0 : (shakeSetting === 'medium' ? 0.5 : 1.0);
+    let shakeMult = reducedMotionMedia.matches || shakeSetting === 'off' ? 0 : (shakeSetting === 'medium' ? 0.5 : 1.0);
     let effectiveShake = screenShake * shakeMult;
 
     if (effectiveShake > 0) {
@@ -2314,7 +2351,13 @@ function gameLoop(timestamp) {
     if (dt > 0.1) dt = 0.1;
 
     update(dt);
-    draw();
+
+    // Gameplay stays at the display refresh rate; menu/pause backdrops use less battery.
+    const ambientFrameInterval = reducedMotionMedia.matches ? 100 : 33;
+    if (gameState === 'playing' || timestamp - lastRenderTime >= ambientFrameInterval) {
+        draw();
+        lastRenderTime = timestamp;
+    }
 
     requestAnimationFrame(gameLoop);
 }
@@ -2324,19 +2367,22 @@ function gameLoop(timestamp) {
 // ==========================================================================
 
 function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
     const width = window.innerWidth;
     const height = window.innerHeight;
+    const isCompact = width <= 800;
+    const dprCap = isCompact ? 1.5 : 2;
+    const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
+    maxParticles = isCompact ? 140 : 250;
     
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
     
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
     
     // Hexagon radius dynamic adjustments based on screen scale
     hexRadius = Math.min(width, height) * 0.18;
-    if (hexRadius < 75) hexRadius = 75;
+    if (hexRadius < 68) hexRadius = 68;
     if (hexRadius > 130) hexRadius = 130;
 
     cachedBgGradient = null;
@@ -2348,8 +2394,29 @@ function resizeCanvas() {
 
 // Key Listeners
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.Left = true;
-    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.Right = true;
+    const isLeftControl = e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A';
+    const isRightControl = e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D';
+    if ((isLeftControl || isRightControl) && gameState === 'playing') {
+        e.preventDefault();
+    }
+    if (isLeftControl) keys.Left = true;
+    if (isRightControl) keys.Right = true;
+
+    if (e.key === 'Escape') {
+        const openModalElement = ['theme-modal', 'badges-modal', 'stats-modal']
+            .map(id => document.getElementById(id))
+            .find(modal => modal && !modal.classList.contains('hidden'));
+        if (openModalElement) {
+            e.preventDefault();
+            closeModal(openModalElement.id);
+            return;
+        }
+        if (gameState === 'playing' || gameState === 'paused') {
+            e.preventDefault();
+            togglePause();
+            return;
+        }
+    }
     
     // Space or 'P' to toggle pause
     if (e.key === ' ' || e.key === 'p' || e.key === 'P') {
@@ -2374,7 +2441,7 @@ function getAngleFromCenter(clientX, clientY) {
 
 function handlePointerStart(clientX, clientY, target) {
     if (gameState !== 'playing') return;
-    if (target && target.closest && (target.closest('.hud-controls') || target.closest('.action-btn') || target.closest('.settings-container'))) return;
+    if (target && target.closest && (target.closest('.hud-controls') || target.closest('.touch-controls') || target.closest('.action-btn') || target.closest('.settings-container'))) return;
     
     isInputActive = true;
     isDragging = false;
@@ -2437,21 +2504,49 @@ window.addEventListener('mouseup', () => {
 
 window.addEventListener('touchstart', (e) => {
     if (e.touches.length > 0) {
+        if (gameState === 'playing' && !e.target.closest('.touch-controls')) e.preventDefault();
         const touch = e.touches[0];
         handlePointerStart(touch.clientX, touch.clientY, e.target);
     }
-}, { passive: true });
+}, { passive: false });
 
 window.addEventListener('touchmove', (e) => {
     if (e.touches.length > 0) {
+        if (gameState === 'playing' && !e.target.closest('.touch-controls')) e.preventDefault();
         const touch = e.touches[0];
         handlePointerMove(touch.clientX, touch.clientY, e.target);
     }
-}, { passive: true });
+}, { passive: false });
 
 window.addEventListener('touchend', () => {
     handlePointerEnd();
 });
+
+function bindRotationButton(buttonId, direction) {
+    const button = document.getElementById(buttonId);
+    if (!button) return;
+
+    const setActive = (active, event) => {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        if (active && gameState !== 'playing') return;
+        keys[direction] = active;
+        button.classList.toggle('is-active', active);
+    };
+
+    button.addEventListener('pointerdown', (event) => {
+        setActive(true, event);
+        if (button.setPointerCapture) button.setPointerCapture(event.pointerId);
+    });
+    button.addEventListener('pointerup', event => setActive(false, event));
+    button.addEventListener('pointercancel', event => setActive(false, event));
+    button.addEventListener('lostpointercapture', event => setActive(false, event));
+}
+
+bindRotationButton('rotate-left-btn', 'Left');
+bindRotationButton('rotate-right-btn', 'Right');
 
 // Screen Shake Toggle UI Listener
 const shakeBtn = document.getElementById('shake-toggle-btn');
@@ -2584,6 +2679,7 @@ if (statsCloseBtn) statsCloseBtn.addEventListener('click', () => closeModal('sta
 // Auto pause on focus loss or visibility change
 document.addEventListener('visibilitychange', () => {
     if (document.hidden && gameState === 'playing') {
+        saveLifetimeStats();
         pauseGame();
     }
 });
@@ -2646,7 +2742,14 @@ if (modeToggleBtn) {
 }
 
 // Start engine
-window.addEventListener('resize', resizeCanvas);
+let resizeFrame = null;
+window.addEventListener('resize', () => {
+    if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = null;
+        resizeCanvas();
+    });
+});
 resizeCanvas();
 
 // Load Persistence Data
@@ -2658,8 +2761,8 @@ checkBadgesAndThemes();
 // Detect and apply saved game mode
 setGameMode(gameMode);
 
-// Initialize the game state so that autopilot starts immediately behind the start panel
-initGame();
+// Prepare the visual state without counting a mission before the player presses Start.
+initGame(false);
 gameState = 'start';
 
 // Load and render history UI
@@ -2676,6 +2779,21 @@ applyTheme(savedTheme);
 
 // Set initial highscore on startup screen
 document.getElementById('best-score-val').innerText = highScore;
+
+// Keep the primary action above the fold on compact phones.
+const tutorialDetails = document.querySelector('.tutorial-box');
+if (tutorialDetails && window.matchMedia('(max-width: 600px)').matches) {
+    tutorialDetails.removeAttribute('open');
+}
+
+// Enable offline replay after the first successful visit on a hosted HTTPS build.
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(error => {
+            console.warn('Service worker registration failed', error);
+        });
+    });
+}
 
 // Start game loop
 requestAnimationFrame((timestamp) => {

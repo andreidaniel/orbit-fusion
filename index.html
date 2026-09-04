@@ -2,17 +2,27 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Orbit Fusion - Cosmic Arcade Puzzle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Orbit Fusion este un joc arcade cosmic rapid, optimizat pentru desktop, telefon și tabletă.">
+    <meta name="theme-color" content="#050508">
+    <meta name="color-scheme" content="dark light">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Orbit Fusion - Joc arcade cosmic</title>
     <!-- Google Fonts: Plus Jakarta Sans & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.6">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="style.css?v=2.0">
     <script>
-        // Căutător global de erori pentru afișarea excepțiilor direct pe ecran (ajută la diagnosticare)
+        // Mesaj de recuperare prietenos; detaliile tehnice rămân doar în consolă.
         window.onerror = function(message, source, lineno, colno, error) {
+            console.error('Orbit Fusion runtime error', { message, source, lineno, colno, error });
+            if (document.querySelector('.runtime-error')) return false;
             const errDiv = document.createElement('div');
+            errDiv.className = 'runtime-error';
+            errDiv.setAttribute('role', 'alert');
             errDiv.style.position = 'fixed';
             errDiv.style.top = '0';
             errDiv.style.left = '0';
@@ -21,11 +31,10 @@
             errDiv.style.color = 'white';
             errDiv.style.padding = '15px';
             errDiv.style.zIndex = '99999';
-            errDiv.style.fontFamily = 'monospace';
-            errDiv.style.fontSize = '12px';
-            errDiv.style.whiteSpace = 'pre-wrap';
+            errDiv.style.fontFamily = 'system-ui, sans-serif';
+            errDiv.style.fontSize = '14px';
             errDiv.style.boxShadow = '0 5px 15px rgba(0,0,0,0.5)';
-            errDiv.innerText = 'EROARE LOGICĂ JOC:\n' + message + '\n\nFișier: ' + source + '\nLinia: ' + lineno + ':' + colno + '\nStack: ' + (error ? error.stack : 'N/A');
+            errDiv.innerText = 'Jocul a întâmpinat o problemă. Reîncarcă pagina pentru a relua misiunea.';
             document.body.appendChild(errDiv);
             return false;
         };
@@ -34,10 +43,10 @@
 <body>
     <div id="game-container">
         <!-- The main canvas where the game is rendered -->
-        <canvas id="game-canvas"></canvas>
+        <canvas id="game-canvas" role="img" aria-label="Zona de joc Orbit Fusion: rotește hexagonul și potrivește scuturile cu sferele colorate."></canvas>
 
         <!-- HUD: Displays during gameplay -->
-        <div id="hud" class="hidden">
+        <div id="hud" class="hidden" aria-label="Informații de joc">
             <div class="hud-item score-container">
                 <span class="hud-label">SCOR</span>
                 <span id="score-val" class="hud-value neon-cyan">0</span>
@@ -80,7 +89,7 @@
                         <path id="pause-icon" fill="currentColor" d="M14,19H18V5H14M6,19H10V5H6V19Z" />
                     </svg>
                 </button>
-                <button id="sound-toggle" class="sound-toggle-btn" aria-label="Mute sound">
+                <button id="sound-toggle" class="sound-toggle-btn" aria-label="Oprește sunetul">
                     <svg id="sound-icon" viewBox="0 0 24 24" width="24" height="24">
                         <!-- Volume High Icon -->
                         <path fill="currentColor" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.85 14,18.71V20.77C18.07,19.86 21,16.28 21,12C21,7.72 18.07,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.77 16.5,12M3,9V15H7L12,20V4L7,9H3Z" />
@@ -89,8 +98,19 @@
             </div>
         </div>
 
+        <div id="touch-controls" class="touch-controls" aria-label="Comenzi de rotire">
+            <button id="rotate-left-btn" class="touch-control-btn" aria-label="Rotește spre stânga">
+                <span class="touch-key" aria-hidden="true">A</span>
+                <span class="touch-label">STÂNGA</span>
+            </button>
+            <button id="rotate-right-btn" class="touch-control-btn" aria-label="Rotește spre dreapta">
+                <span class="touch-key" aria-hidden="true">D</span>
+                <span class="touch-label">DREAPTA</span>
+            </button>
+        </div>
+
         <!-- Rest Reminder Banner Overlay -->
-        <div id="rest-reminder-banner" class="rest-reminder-banner hidden">
+        <div id="rest-reminder-banner" class="rest-reminder-banner hidden" role="status" aria-live="polite">
             <div class="rest-reminder-content">
                 <div class="rest-icon">🧘</div>
                 <div class="rest-info">
@@ -108,7 +128,7 @@
         
         <!-- 1. Start Screen -->
         <div id="start-screen" class="overlay">
-            <div class="glass-panel">
+            <main class="glass-panel start-panel">
                 <h1 class="game-title neon-text">ORBIT <span class="accent-text">FUSION</span></h1>
                 <p class="game-tagline">Rotește hexagonul. Potrivește culorile. Fuzionează energia.</p>
                 
@@ -126,30 +146,34 @@
                     </div>
                 </div>
 
-                <div class="tutorial-box">
-                    <h3>Instrucțiuni de Joc:</h3>
-                    <div class="steps-list">
-                        <div class="step-item">
-                            <span class="step-num step-1">1</span>
-                            <p>Sferele energetice cad spre nucleul gravitațional central.</p>
+                <button id="start-btn" class="action-btn">JOACĂ ACUM</button>
+
+                <details class="tutorial-box" open>
+                    <summary>CUM SE JOACĂ</summary>
+                    <div class="tutorial-content">
+                        <div class="steps-list">
+                            <div class="step-item">
+                                <span class="step-num step-1">1</span>
+                                <p>Urmărește sfera care se apropie de nucleu.</p>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-num step-2">2</span>
+                                <p>Aliniază cu ea scutul de aceeași culoare.</p>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-num step-3">3</span>
+                                <p>Unește scuturile identice pentru bonusuri.</p>
+                            </div>
                         </div>
-                        <div class="step-item">
-                            <span class="step-num step-2">2</span>
-                            <p>Rotește hexagonul pentru a intercepta sferele cu un <strong>scut de plasmă</strong> de aceeași culoare.</p>
-                        </div>
-                        <div class="step-item">
-                            <span class="step-num step-3">3</span>
-                            <p>Două <strong>scuturi de plasmă</strong> adiacente de aceeași culoare vor fuziona într-un scut superior.</p>
+
+                        <div id="control-copy" class="control-tip">
+                            <p><strong>Desktop:</strong> A / D sau săgețile. <strong>Mobil:</strong> butoanele de rotire ori glisarea pe ecran.</p>
                         </div>
                     </div>
-                    
-                    <div class="control-tip">
-                        <p>🎮 <strong>Control:</strong> Tastele <strong>A / D</strong> (sau <strong>◀ / ▶</strong>) pe tastatură / <strong>Atinge &amp; Glisează</strong> (Drag) pe ecran.</p>
-                    </div>
-                </div>
+                </details>
                 
                 <div class="stats-box">
-                    <span class="best-score-label">BEST SCORE</span>
+                    <span class="best-score-label">RECORD PERSONAL</span>
                     <span id="best-score-val" class="best-score-val neon-cyan">0</span>
                 </div>
 
@@ -161,18 +185,16 @@
                 </div>
                 
                 <div class="progression-btn-row">
-                    <button id="open-theme-btn" class="sub-action-btn" aria-label="Deschide selecția de teme">🎨 TEME</button>
-                    <button id="open-badges-btn" class="sub-action-btn" aria-label="Deschide emblemele">🏆 EMBLEME</button>
-                    <button id="open-stats-btn" class="sub-action-btn" aria-label="Deschide statisticile">📊 STATISTICI</button>
+                    <button id="open-theme-btn" class="sub-action-btn" aria-label="Deschide selecția de teme">TEME</button>
+                    <button id="open-badges-btn" class="sub-action-btn" aria-label="Deschide emblemele">EMBLEME</button>
+                    <button id="open-stats-btn" class="sub-action-btn" aria-label="Deschide statisticile">STATISTICI</button>
                 </div>
-                
-                <button id="start-btn" class="action-btn">START MISIUNE</button>
-            </div>
+            </main>
         </div>
 
         <!-- 2. Game Over / Run Summary Screen -->
-        <div id="game-over-screen" class="overlay hidden">
-            <div class="glass-panel summary-panel">
+        <div id="game-over-screen" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="go-title">
+            <div class="glass-panel summary-panel" tabindex="-1">
                 <h2 id="go-title" class="game-over-title neon-cyan">REZUMAT MISIUNE &amp; FLUX</h2>
                 <p id="go-subtitle" class="game-over-subtitle">Sesiune de concentrare finalizată cu succes!</p>
                 
@@ -218,13 +240,13 @@
         </div>
 
         <!-- 3. Pause Screen -->
-        <div id="pause-screen" class="overlay hidden">
-            <div class="glass-panel">
-                <h2 class="game-title neon-text">JOC PAUZAT</h2>
+        <div id="pause-screen" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+            <div class="glass-panel pause-panel" tabindex="-1">
+                <h2 id="pause-title" class="game-title neon-text">JOC PAUZAT</h2>
                 <p class="game-tagline">Misiunea este suspendată.</p>
                 
                 <div class="control-tip pause-guide">
-                    <p>🔄 <strong>Rotire:</strong> Tastele <strong>A / D</strong> (sau <strong>◀ / ▶</strong>) / <strong>Glisează pe ecran (Touch Drag)</strong>.</p>
+                    <p><strong>Desktop:</strong> A / D sau săgețile. <strong>Mobil:</strong> butoanele de rotire ori glisarea pe ecran.</p>
                 </div>
 
                 <div class="settings-container">
@@ -272,7 +294,7 @@
         </div>
 
         <!-- Float Notification Level Up (dynamic overlay) -->
-        <div id="level-up-banner" class="level-up-banner hidden">
+        <div id="level-up-banner" class="level-up-banner hidden" role="status" aria-live="polite">
             <div class="level-up-content">
                 <h2 class="neon-text-magenta">LEVEL UP!</h2>
                 <p id="level-up-text">NIVELUL 2</p>
@@ -280,13 +302,13 @@
         </div>
 
         <!-- Toast Notifications Container -->
-        <div id="toast-container" class="toast-container"></div>
+        <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
         <!-- 4. Cosmic Theme Selection Modal -->
-        <div id="theme-modal" class="overlay modal-overlay hidden">
-            <div class="glass-panel modal-panel">
+        <div id="theme-modal" class="overlay modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
+            <div class="glass-panel modal-panel" tabindex="-1">
                 <div class="modal-header">
-                    <h2 class="neon-text">SELECȚIE TEME COSMICE</h2>
+                    <h2 id="theme-modal-title" class="neon-text">SELECȚIE TEME COSMICE</h2>
                     <button id="theme-close-btn" class="close-btn" aria-label="Închide modal de teme">&times;</button>
                 </div>
                 <p class="modal-subtitle">Alege o temă vizuală cosmică deblocată pentru a-ți personaliza jocul.</p>
@@ -297,10 +319,10 @@
         </div>
 
         <!-- 5. Badges & Skill Mastery Modal -->
-        <div id="badges-modal" class="overlay modal-overlay hidden">
-            <div class="glass-panel modal-panel">
+        <div id="badges-modal" class="overlay modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="badges-modal-title">
+            <div class="glass-panel modal-panel" tabindex="-1">
                 <div class="modal-header">
-                    <h2 class="neon-text">EMBLEME DE MAESTRIE</h2>
+                    <h2 id="badges-modal-title" class="neon-text">EMBLEME DE MAESTRIE</h2>
                     <button id="badges-close-btn" class="close-btn" aria-label="Închide modal de embleme">&times;</button>
                 </div>
                 <p class="modal-subtitle">Atinge performanțe în joc pentru a debloca toate cele 6 embleme cosmice.</p>
@@ -311,10 +333,10 @@
         </div>
 
         <!-- 6. Lifetime Stats Modal -->
-        <div id="stats-modal" class="overlay modal-overlay hidden">
-            <div class="glass-panel modal-panel">
+        <div id="stats-modal" class="overlay modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="stats-modal-title">
+            <div class="glass-panel modal-panel" tabindex="-1">
                 <div class="modal-header">
-                    <h2 class="neon-text-magenta">STATISTICI PERSISTENTE</h2>
+                    <h2 id="stats-modal-title" class="neon-text-magenta">STATISTICI PERSISTENTE</h2>
                     <button id="stats-close-btn" class="close-btn" aria-label="Închide modal de statistici">&times;</button>
                 </div>
                 <p class="modal-subtitle">Progresul și realizările tale pe termen lung salvate în profil.</p>
@@ -354,6 +376,7 @@
         </div>
     </div>
 
-    <script src="app.js?v=1.6"></script>
+    <noscript>Orbit Fusion are nevoie de JavaScript activat pentru a rula.</noscript>
+    <script src="app.js?v=2.0"></script>
 </body>
 </html>
