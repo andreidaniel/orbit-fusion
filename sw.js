@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orbit-fusion-v3';
+const CACHE_NAME = 'orbit-fusion-v9';
 const CORE_ASSETS = [
     './',
     './index.html',

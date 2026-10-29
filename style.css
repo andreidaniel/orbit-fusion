@@ -3,18 +3,18 @@
    ========================================================================== */
 
 :root {
-    --bg-color: #050508;
-    --panel-bg: rgba(10, 10, 18, 0.7);
-    --border-glow: rgba(255, 255, 255, 0.07);
+    --bg-color: #060913;
+    --panel-bg: rgba(13, 19, 36, 0.82);
+    --border-glow: rgba(148, 163, 184, 0.14);
     
-    /* Neon Palette */
-    --cyan: #00f0ff;
-    --magenta: #ff007f;
-    --yellow: #ffdd00;
-    --green: #00ff66;
-    --purple: #aa00ff;
-    --white: #ffffff;
-    --red: #ff3344;
+    /* Pleasant Bioluminescent Cosmic Palette */
+    --cyan: #22d3ee;
+    --magenta: #f43f85;
+    --yellow: #fbbf24;
+    --green: #34d399;
+    --purple: #a78bfa;
+    --white: #f8fafc;
+    --red: #f87171;
     
     /* Font System */
     --font-title: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -76,7 +76,7 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: radial-gradient(circle at center, #0f1026 0%, #030307 100%);
+    background: radial-gradient(circle at center, #0d1326 0%, #050711 100%);
 }
 
 #game-canvas {
@@ -137,20 +137,20 @@ html, body {
     font-variant-numeric: tabular-nums;
 }
 
-/* Neon Text Shadows */
+/* Crisp text accents without glow */
 .neon-cyan {
     color: var(--cyan);
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.28);
+    text-shadow: none;
 }
 
 .neon-magenta {
     color: var(--magenta);
-    text-shadow: 0 0 10px rgba(255, 0, 127, 0.28);
+    text-shadow: none;
 }
 
 .neon-yellow {
     color: var(--yellow);
-    text-shadow: 0 0 10px rgba(255, 221, 0, 0.28);
+    text-shadow: none;
 }
 
 /* Score Area */
@@ -292,6 +292,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    gap: 10px;
 }
 
 .stability-bar-container {
@@ -463,8 +464,7 @@ html, body {
 
 .neon-text {
     color: #ffffff;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.1),
-                 0 0 30px rgba(0, 240, 255, 0.2);
+    text-shadow: none;
 }
 
 .accent-text {
@@ -572,7 +572,7 @@ html, body {
 
 .control-tip strong {
     color: var(--cyan);
-    text-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+    text-shadow: none;
 }
 
 .pause-guide {
@@ -655,12 +655,13 @@ html, body {
 /* Action Button */
 .action-btn {
     width: 100%;
-    padding: 16px 32px;
-    margin-top: 16px;
-    background: linear-gradient(135deg, var(--cyan) 0%, var(--magenta) 100%);
+    padding: 14px 32px;
+    margin-top: 12px;
+    background: linear-gradient(115deg, #0ea5e9 0%, #6366f1 52%, #ec4899 100%);
     border: none;
     border-radius: 100px;
-    color: #050508;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
     font-family: var(--font-title);
     font-size: 1rem;
     font-weight: 700;
@@ -694,7 +695,7 @@ html, body {
 
 .neon-red-text {
     color: var(--red);
-    text-shadow: 0 0 15px rgba(255, 51, 68, 0.5);
+    text-shadow: none;
 }
 
 .game-over-subtitle {
@@ -792,7 +793,7 @@ html, body {
     font-size: 2.2rem;
     font-weight: 700;
     letter-spacing: 4px;
-    text-shadow: 0 0 20px rgba(255, 0, 127, 0.6);
+    text-shadow: none;
     margin-bottom: 4px;
 }
 
@@ -1056,24 +1057,24 @@ html, body {
    ========================================================================== */
 
 body.light-theme {
-    --bg-color: #e9ecf3;
-    --panel-bg: rgba(255, 255, 255, 0.88); /* Mai solid pentru a spori contrastul textului */
-    --border-glow: rgba(0, 0, 0, 0.08);
+    --bg-color: #eef3f9;
+    --panel-bg: rgba(255, 255, 255, 0.90);
+    --border-glow: rgba(15, 23, 42, 0.09);
     
-    /* Culori neon întunecate și contrastante pentru modul deschis */
-    --cyan: #0082a3;       /* Albastru cyan intens, lizibil */
-    --magenta: #cf006a;    /* Purpuriu magenta intens, lizibil */
-    --yellow: #b08200;     /* Galben solar auriu/chihlimbar (contrast ridicat) */
-    --green: #008c37;      /* Verde intens */
-    --purple: #8300c2;     /* Violet regal */
-    --white: #141418;      /* Negru cărbune pentru elementele deschise */
-    --red: #cf152d;        /* Roșu rubin închis pentru erori */
+    /* Pleasant, high-contrast jewel & pastel-sky tones for Light Mode */
+    --cyan: #0284c7;
+    --magenta: #db2777;
+    --yellow: #d97706;
+    --green: #059669;
+    --purple: #7c3aed;
+    --white: #0f172a;
+    --red: #dc2626;
     
-    color: #1a1a24;
+    color: #0f172a;
 }
 
 body.light-theme #game-container {
-    background: radial-gradient(circle at center, #dfe5f2 0%, #c4cfdf 100%);
+    background: radial-gradient(circle at center, #f8fafc 0%, #e2eaf5 100%);
 }
 
 body.light-theme .hud-item {
@@ -1185,23 +1186,23 @@ body.light-theme .theme-toggle-btn:hover {
 
 /* Redefinire umbre text / neon în modul Light pentru contrast mărit */
 body.light-theme .neon-cyan {
-    text-shadow: 0 1px 2px rgba(0, 130, 163, 0.15);
+    text-shadow: none;
 }
 
 body.light-theme .neon-magenta {
-    text-shadow: 0 1px 2px rgba(207, 0, 106, 0.15);
+    text-shadow: none;
 }
 
 body.light-theme .neon-yellow {
-    text-shadow: 0 1px 2px rgba(176, 130, 0, 0.15);
+    text-shadow: none;
 }
 
 body.light-theme .neon-red-text {
-    text-shadow: 0 1px 2px rgba(207, 21, 45, 0.15);
+    text-shadow: none;
 }
 
 body.light-theme .neon-text-magenta {
-    text-shadow: 0 1px 2px rgba(207, 0, 106, 0.2);
+    text-shadow: none;
 }
 
 /* Ecranul Level Up în modul Light */
@@ -1265,7 +1266,7 @@ body.light-theme .high-score-badge {
 
 .neon-white {
     color: #ffffff;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    text-shadow: none;
 }
 
 /* 2. Non-Intrusive Session Rest Reminder Banner */
@@ -1432,7 +1433,7 @@ body.light-theme .high-score-badge {
 
 .mode-btn.active .mode-name {
     color: var(--cyan);
-    text-shadow: 0 0 8px rgba(0, 240, 255, 0.25);
+    text-shadow: none;
 }
 
 .mode-btn.active .mode-desc {
@@ -1440,13 +1441,12 @@ body.light-theme .high-score-badge {
 }
 
 /* Zen Mode Serene Body Atmosphere */
-body.zen-mode #game-container {
-    background: radial-gradient(circle at center, #051824 0%, #020812 100%);
+body.zen-mode:not(.light-theme) #game-container {
+    background: radial-gradient(circle at center, #071929 0%, #030914 100%);
 }
 
-body.zen-mode .neon-cyan {
-    color: #00f0ff;
-    text-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+body.light-theme.zen-mode #game-container {
+    background: radial-gradient(circle at center, #f0f9ff 0%, #dff0fa 100%);
 }
 
 /* 4. Pause Screen Breathing & Mindfulness Visualizer Widget */
@@ -1523,7 +1523,7 @@ body.zen-mode .neon-cyan {
     font-weight: 800;
     color: #ffffff;
     letter-spacing: 1px;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    text-shadow: none;
 }
 
 .breathing-timer-text {
@@ -1715,7 +1715,7 @@ body.light-theme .neon-white {
 .toast-icon {
     font-size: 1.8rem;
     line-height: 1;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+    filter: none;
 }
 
 .toast-content {
@@ -2176,7 +2176,8 @@ summary:focus-visible {
 
 .sound-toggle-btn,
 .pause-toggle-btn,
-.theme-toggle-btn {
+.theme-toggle-btn,
+.lang-toggle-btn {
     width: 48px;
     min-width: 48px;
     min-height: 48px;
@@ -2485,12 +2486,9 @@ body.light-theme .touch-label {
         letter-spacing: 0.2px;
     }
 
-    .stability-container .hud-label::after {
-        content: "STAB.";
-    }
-
+    .stability-container .hud-label::after,
     .session-container .hud-label::after {
-        content: "TIMP";
+        content: attr(data-short);
     }
 
     .hud-controls {
@@ -2503,12 +2501,13 @@ body.light-theme .touch-label {
 
     .sound-toggle-btn,
     .pause-toggle-btn,
-    .theme-toggle-btn {
+    .theme-toggle-btn,
+    .lang-toggle-btn {
         width: 44px;
         min-width: 44px;
         min-height: 44px;
         height: 44px;
-        padding: 9px;
+        padding: 6px;
         border-radius: 12px;
     }
 
@@ -2693,5 +2692,1051 @@ body.light-theme .touch-label {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+}
+
+/* Readable, calm controls & bilingual/endless UI polish at every viewport size. */
+.panel-top-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.endless-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-title);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.12);
+    border: 1px solid rgba(34, 211, 238, 0.32);
+    color: var(--cyan);
+}
+
+.top-utility-btns {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.utility-pill-btn {
+    min-height: 34px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-family: var(--font-title);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.utility-pill-btn:hover {
+    background: rgba(34, 211, 238, 0.18);
+    border-color: var(--cyan);
+    color: #ffffff;
+}
+
+.lang-toggle-btn {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glow);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-title);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    transition: all 0.2s ease;
+}
+
+.lang-toggle-btn:hover {
+    color: #ffffff;
+    border-color: var(--cyan);
+    transform: scale(1.05);
+}
+
+.sector-pill {
+    font-family: var(--font-title);
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: rgba(244, 63, 133, 0.14);
+    border: 1px solid rgba(244, 63, 133, 0.32);
+    color: var(--magenta);
+    margin-left: auto;
+}
+
+body.light-theme .endless-pill {
+    background: rgba(2, 132, 199, 0.10);
+    border-color: rgba(2, 132, 199, 0.28);
+    color: #0369a1;
+}
+
+body.light-theme .utility-pill-btn {
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.14);
+    color: #1e293b;
+}
+
+body.light-theme .utility-pill-btn:hover {
+    background: rgba(2, 132, 199, 0.12);
+    border-color: #0284c7;
+    color: #0f172a;
+}
+
+body.light-theme .lang-toggle-btn {
+    background: rgba(255, 255, 255, 0.88);
+    color: #1e293b;
+    border-color: rgba(15, 23, 42, 0.12);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+body.light-theme .lang-toggle-btn:hover {
+    color: #0284c7;
+    border-color: #0284c7;
+    background: #ffffff;
+}
+
+body.light-theme .sector-pill {
+    background: rgba(219, 39, 119, 0.10);
+    border-color: rgba(219, 39, 119, 0.28);
+    color: #be185d;
+}
+
+.start-panel {
+    max-width: 680px;
+    padding: 20px 24px;
+}
+
+.start-panel .game-title {
+    font-size: 2rem;
+    margin-bottom: 4px;
+    text-shadow: none;
+}
+
+.start-panel .game-tagline {
+    font-size: 0.92rem;
+    line-height: 1.45;
+    margin-bottom: 10px;
+}
+
+.start-panel .mode-selector-container {
+    margin-bottom: 10px;
+    gap: 5px;
+}
+
+.mode-btn {
+    padding: 9px 10px;
+}
+
+.start-panel .mode-desc {
+    font-size: 0.78rem;
+    line-height: 1.35;
+}
+
+.quick-guide {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: #cbd5e1;
+    margin: 0 0 8px;
+}
+
+.start-panel > .action-btn {
+    margin: 0 0 8px;
+    min-height: 48px;
+    padding: 12px 28px;
+}
+
+.music-setting {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 4px 0 8px;
+    font-size: 0.84rem;
+    color: #cbd5e1;
+}
+
+.music-setting input {
+    min-height: 32px;
+    width: 120px;
+    accent-color: var(--cyan);
+    cursor: pointer;
+}
+
+.music-setting span {
+    font-size: 0.78rem;
+}
+
+.tutorial-box {
+    margin-bottom: 8px;
+}
+
+.tutorial-box summary {
+    padding: 9px 42px 9px 14px;
+    font-size: 0.74rem;
+}
+
+.tutorial-content {
+    padding: 0 12px 10px;
+}
+
+.start-panel .steps-list {
+    margin-bottom: 8px;
+    gap: 6px;
+}
+
+.start-panel .step-item {
+    padding: 8px 10px;
+}
+
+.start-panel .step-item p,
+.start-panel .control-tip p {
+    font-size: 0.80rem;
+    line-height: 1.42;
+}
+
+.start-panel .control-tip {
+    padding: 8px 10px;
+}
+
+.start-panel .stats-box {
+    margin: 0 0 4px;
+}
+
+.start-panel .best-score-val {
+    font-size: 1.3rem;
+}
+
+.start-panel .history-box {
+    max-height: 82px;
+    padding: 8px 10px;
+    margin: 0 0 6px;
+}
+
+.start-panel .progression-btn-row {
+    margin: 4px 0 0;
+}
+
+body.light-theme .quick-guide,
+body.light-theme .music-setting {
+    color: #334155;
+}
+
+body.light-theme .modal-subtitle,
+body.light-theme .theme-card-desc {
+    color: #475569;
+}
+
+body.light-theme .music-setting input {
+    accent-color: #0284c7;
+}
+
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible {
+    outline: 3px solid var(--cyan);
+    outline-offset: 3px;
+}
+
+body.light-theme .overlay {
+    background: rgba(226, 234, 245, 0.80);
+}
+
+body.light-theme .action-btn {
+    background: linear-gradient(115deg, #0284c7 0%, #4f46e5 52%, #db2777 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 22px rgba(2, 132, 199, 0.22);
+}
+
+body.light-theme .tutorial-box summary {
+    color: #be185d;
+}
+
+body.light-theme .start-panel .mode-desc {
+    color: #475569;
+}
+
+/* Text accents use harmonious, eye-friendly shades in both Dark & Light modes */
+body:not(.light-theme) .neon-cyan { color: #67e8f9; }
+body:not(.light-theme) .neon-magenta,
+body:not(.light-theme) .neon-text-magenta { color: #f472b6; }
+body:not(.light-theme) .neon-yellow { color: #fcd34d; }
+body:not(.light-theme) .neon-red-text { color: #fca5a5; }
+body.light-theme .neon-cyan { color: #0369a1; }
+body.light-theme .neon-magenta,
+body.light-theme .neon-text-magenta { color: #be185d; }
+body.light-theme .neon-yellow { color: #b45309; }
+body.light-theme .neon-red-text { color: #b91c1c; }
+
+/* Pause settings: compact layout so all controls stay above the fold */
+.pause-panel {
+    max-width: 820px;
+    grid-template-columns: minmax(0, 1.55fr) minmax(220px, 1fr);
+    grid-template-areas:
+        "title title"
+        "tagline tagline"
+        "guide guide"
+        "settings breathing"
+        "music music"
+        "resume resume";
+    gap: 8px 16px;
+    padding: 18px 22px;
+}
+
+.pause-panel > .music-setting {
+    grid-area: music;
+    margin: 0;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: rgba(140, 160, 190, 0.07);
+}
+
+.pause-panel .settings-container {
+    gap: 6px;
+}
+
+.pause-panel .setting-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 7px 11px;
+    text-align: left;
+}
+
+.setting-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.pause-panel .setting-label {
+    font-size: 0.82rem;
+    letter-spacing: 0;
+    line-height: 1.3;
+    color: #e2e8f0;
+}
+
+.setting-description {
+    font-size: 0.73rem;
+    line-height: 1.35;
+    color: #94a3b8;
+}
+
+.pause-panel .setting-btn {
+    min-width: 98px;
+    max-width: 136px;
+    min-height: 36px;
+    border-radius: 10px;
+    padding: 6px 10px;
+    box-shadow: none;
+    color: #a5f3fc;
+    background: #1e3346;
+    border-color: #3b6982;
+}
+
+.pause-panel .setting-btn:hover {
+    background: #2b4963;
+    color: #ffffff;
+}
+
+.pause-panel .breathing-subtitle {
+    color: #94a3b8;
+    font-size: 0.74rem;
+    line-height: 1.35;
+    letter-spacing: 0;
+}
+
+body.light-theme .pause-panel .setting-row {
+    background: #f1f5f9;
+    border-color: #d8e2ee;
+}
+
+body.light-theme .pause-panel .setting-label,
+body.light-theme .pause-panel .breathing-phase-text {
+    color: #0f172a;
+}
+
+body.light-theme .pause-panel .setting-description,
+body.light-theme .breathing-subtitle {
+    color: #475569;
+}
+
+body.light-theme .pause-panel .setting-btn {
+    color: #0369a1;
+    background: #e0f2fe;
+    border-color: #7dd3fc;
+}
+
+body.light-theme .pause-panel .setting-btn:hover {
+    background: #bae6fd;
+    color: #0c4a6e;
+}
+
+@media (max-width: 800px), (pointer: coarse) {
+    .sector-pill {
+        display: none;
+    }
+}
+
+@media (max-width: 680px) {
+    .pause-panel {
+        display: flex;
+        flex-direction: column;
+        padding: 14px 12px;
+        gap: 8px;
+    }
+    .pause-panel .setting-row {
+        grid-template-columns: minmax(0, 1fr) 98px;
+        gap: 8px;
+        padding: 6px 9px;
+    }
+    .pause-panel > .breathing-widget-container {
+        padding: 10px 12px;
+        gap: 6px;
+    }
+    .pause-panel .breathing-visualizer {
+        width: 86px;
+        height: 86px;
+        margin: 2px 0;
+    }
+    .pause-panel .breathing-ring-outer {
+        width: 78px;
+        height: 78px;
+    }
+    .pause-panel > .music-setting {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .panel-top-bar {
+        margin-bottom: 6px;
+    }
+    .endless-pill {
+        font-size: 0.60rem;
+        padding: 3px 8px;
+    }
+    .utility-pill-btn {
+        min-height: 30px;
+        padding: 3px 9px;
+        font-size: 0.66rem;
+    }
+    .start-panel .step-item p,
+    .start-panel .control-tip p {
+        font-size: 0.76rem;
+    }
+    .start-panel .mode-desc {
+        font-size: 0.72rem;
+    }
+    .quick-guide {
+        font-size: 0.80rem;
+    }
+}
+
+/* ==========================================================================
+   SYMMETRY & GEOMETRIC ALIGNMENT OVERRIDES (PC & SMARTPHONE)
+   ========================================================================== */
+
+/* 1. Symmetrical Cockpit HUD on PC & Mobile */
+#hud {
+    top: max(18px, env(safe-area-inset-top));
+    left: 50%;
+    right: auto;
+    width: calc(100% - 36px);
+    max-width: 1140px;
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: minmax(120px, 1fr) minmax(135px, 1.08fr) auto minmax(135px, 1.08fr) minmax(120px, 1fr);
+    grid-template-areas: "score level controls stability session";
+    align-items: stretch;
+    gap: 12px;
+}
+
+.score-container { grid-area: score; width: 100%; min-width: 0; position: relative; }
+.level-container { grid-area: level; width: 100%; min-width: 0; position: relative; }
+.hud-controls {
+    grid-area: controls;
+    align-self: center;
+    justify-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.stability-container { grid-area: stability; width: 100%; min-width: 0; position: relative; }
+.session-container { grid-area: session; width: 100%; min-width: 0; position: relative; }
+
+.hud-item {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    min-height: 68px;
+    padding: 9px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 2px;
+    overflow: visible;
+}
+
+.hud-label {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0;
+    padding-left: 1.5px; /* Compensate uppercase letter-spacing for optical centering */
+    line-height: 1.15;
+}
+
+.hud-value {
+    width: 100%;
+    text-align: center;
+    line-height: 1.15;
+}
+
+.level-badge,
+.stability-header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 2px;
+}
+
+.score-container::after,
+.session-container::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 5px;
+    margin-top: 5px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.32), transparent);
+}
+
+body.light-theme .score-container::after,
+body.light-theme .session-container::after {
+    background: linear-gradient(90deg, transparent, rgba(2, 132, 199, 0.25), transparent);
+}
+
+.xp-bar-container,
+.stability-bar-container {
+    width: 100%;
+    height: 5px;
+    margin-top: 5px;
+    border-radius: 3px;
+}
+
+.sector-pill {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    margin: 0;
+    font-size: 0.58rem;
+    padding: 1px 6px;
+    line-height: 1.25;
+    pointer-events: none;
+}
+
+.combo-badge {
+    right: 8px;
+    top: -9px;
+    z-index: 2;
+}
+
+/* 2. Symmetrical Start Screen Header, Tutorial, Slider, Record & Buttons */
+.panel-top-bar {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+#start-lang-btn {
+    justify-self: start;
+}
+
+.endless-pill {
+    justify-self: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.top-utility-btns {
+    justify-self: end;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.utility-pill-btn {
+    min-width: 118px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.game-title {
+    text-align: center;
+    padding-left: 3px; /* Compensate 3-4px letter-spacing */
+}
+
+.mode-selector {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+}
+
+.mode-btn {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.mode-btn .mode-name,
+.mode-btn .mode-desc {
+    width: 100%;
+    text-align: center;
+}
+
+.music-setting {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+    margin: 4px 0 8px;
+}
+
+.music-setting > span:first-child {
+    text-align: right;
+    justify-self: end;
+}
+
+.music-setting > input {
+    justify-self: center;
+    margin: 0;
+}
+
+.music-setting > span:last-child {
+    text-align: left;
+    justify-self: start;
+}
+
+.tutorial-box summary {
+    text-align: center;
+    padding: 9px 44px;
+}
+
+.start-panel .steps-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    align-items: stretch;
+}
+
+.start-panel .step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 8px 10px;
+    gap: 5px;
+    height: 100%;
+}
+
+.start-panel .step-item p {
+    text-align: center;
+    width: 100%;
+}
+
+.start-panel .control-tip,
+.pause-panel .control-tip {
+    text-align: center;
+}
+
+.start-panel .control-tip p,
+.pause-panel .control-tip p {
+    text-align: center;
+}
+
+.start-panel .stats-box {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1px;
+    padding: 5px 24px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    margin: 2px auto 6px;
+}
+
+body.light-theme .start-panel .stats-box {
+    background: rgba(15, 23, 42, 0.03);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+.start-panel .best-score-label {
+    margin-bottom: 0;
+    padding-left: 1.5px;
+    text-align: center;
+}
+
+.start-panel .best-score-val {
+    text-align: center;
+    line-height: 1.15;
+}
+
+.history-box h3 {
+    text-align: center;
+}
+
+.history-item {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 8px;
+}
+
+.hist-date { text-align: left; }
+.hist-level { text-align: center; }
+.hist-score { text-align: right; }
+
+.progression-btn-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+}
+
+.sub-action-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+}
+
+/* 3. Symmetrical Pause Screen Rows & Breathing Circle */
+.pause-panel {
+    max-width: 820px;
+    grid-template-columns: minmax(0, 1.38fr) minmax(250px, 1fr);
+    align-items: stretch;
+}
+
+.pause-panel .setting-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 134px;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 12px;
+}
+
+.pause-panel .setting-copy {
+    text-align: left;
+    align-items: flex-start;
+}
+
+.pause-panel .setting-btn {
+    width: 134px;
+    min-width: 134px;
+    max-width: 134px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.breathing-widget-container {
+    justify-content: center;
+    text-align: center;
+}
+
+.breathing-header {
+    width: 100%;
+    text-align: center;
+}
+
+.breathing-phase-text {
+    padding-left: 1px;
+    text-align: center;
+}
+
+.breathing-timer-text {
+    text-align: center;
+}
+
+/* 4. Symmetrical Game Over & Modal Cards */
+.go-stat-item {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.go-stat-label,
+.go-stat-value {
+    width: 100%;
+    text-align: center;
+}
+
+.modal-panel .modal-header {
+    padding: 0 48px 12px 48px;
+    justify-content: center;
+    text-align: center;
+}
+
+.modal-panel .modal-header h2 {
+    width: 100%;
+    text-align: center;
+}
+
+.modal-subtitle {
+    width: 100%;
+    text-align: center;
+}
+
+.badge-card {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 16px 14px;
+}
+
+.badge-card-info {
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.badge-card-name,
+.badge-card-desc {
+    width: 100%;
+    text-align: center;
+}
+
+.badge-card-status {
+    align-self: center;
+    margin-top: 10px;
+}
+
+.theme-card {
+    align-items: center;
+    text-align: center;
+}
+
+.theme-card-header {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.theme-swatches {
+    width: 100%;
+    justify-content: center;
+    margin: 2px 0;
+}
+
+.theme-card-desc {
+    width: 100%;
+    text-align: center;
+}
+
+@media (min-width: 601px) {
+    .themes-grid .theme-card:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+        width: calc(50% - 7px);
+        justify-self: center;
+    }
+}
+
+.touch-control-btn {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.touch-label {
+    padding-left: 1px;
+    text-align: center;
+}
+
+/* 5. Smartphone & Compact Tablet Symmetry Overrides */
+@media (max-width: 800px), (pointer: coarse) {
+    #hud {
+        top: max(8px, env(safe-area-inset-top));
+        left: max(8px, env(safe-area-inset-left));
+        right: max(8px, env(safe-area-inset-right));
+        width: auto;
+        max-width: none;
+        transform: none;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-areas:
+            "score level stability session"
+            "controls controls controls controls";
+        gap: 6px;
+    }
+
+    .hud-item {
+        min-height: 52px;
+        padding: 6px 6px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        overflow: visible;
+    }
+
+    .level-badge,
+    .stability-header {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 1px;
+    }
+
+    .hud-label,
+    .stability-container .hud-label::after,
+    .session-container .hud-label::after {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding-left: 0;
+    }
+
+    .hud-value {
+        text-align: center;
+    }
+
+    .score-container::after,
+    .session-container::after,
+    .xp-bar-container,
+    .stability-bar-container {
+        height: 4px;
+        margin-top: 4px;
+    }
+
+    .hud-controls {
+        position: static;
+        grid-area: controls;
+        justify-self: center;
+        justify-content: center;
+        margin-top: 2px;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 680px) {
+    .pause-panel .setting-row {
+        grid-template-columns: minmax(0, 1fr) 112px;
+        gap: 8px;
+        padding: 6px 10px;
+    }
+
+    .pause-panel .setting-btn {
+        width: 112px;
+        min-width: 112px;
+        max-width: 112px;
+        padding: 5px 8px;
+        font-size: 0.68rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .panel-top-bar {
+        grid-template-columns: auto 1fr auto;
+        gap: 6px;
+    }
+
+    .utility-pill-btn {
+        min-width: 86px;
+        padding: 3px 8px;
+        font-size: 0.64rem;
+    }
+
+    .endless-pill {
+        font-size: 0.56rem;
+        padding: 3px 7px;
+        letter-spacing: 0.5px;
+    }
+
+    .tutorial-box summary {
+        padding: 10px 38px;
+        text-align: center;
+    }
+
+    .start-panel .steps-list {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .start-panel .step-item {
+        display: grid;
+        grid-template-columns: 24px 1fr 24px;
+        align-items: center;
+        padding: 7px 10px;
+        gap: 8px;
+    }
+
+    .start-panel .step-item p {
+        text-align: center;
+    }
+
+    .rest-reminder-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 14px 16px;
+        gap: 10px;
+    }
+
+    .rest-info {
+        text-align: center;
+    }
+
+    .rest-actions {
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal-panel .modal-header {
+        padding: 0 40px 10px 40px;
+    }
+
+    .modal-panel .modal-header h2 {
+        text-align: center;
     }
 }
