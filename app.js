@@ -15,6 +15,16 @@
 // 1A. BILINGUAL LOCALIZATION SYSTEM (ROMANIAN & ENGLISH)
 // ==========================================================================
 
+
+// Safe mobile haptic feedback helper
+function triggerHaptic(pattern) {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try {
+            navigator.vibrate(pattern);
+        } catch (_) {}
+    }
+}
+
 let currentLang = 'ro';
 try {
     const savedLang = localStorage.getItem('orbit_fusion_lang');
@@ -162,6 +172,15 @@ const I18N = {
         sector_3: 'Vortex Nebular',
         sector_4: 'Pulsar Cuantic',
         sector_5: 'Furtună Stelară',
+                pause_quit_btn: 'ÎNCHEIE MISIUNEA',
+        go_home_btn: 'MENIU PRINCIPAL',
+        set_rest_interval_label: 'Interval pauză',
+        set_rest_interval_desc: 'Memento de relaxare ochi și minte.',
+        zen_goal_label: 'Misiune Zen',
+        zen_goal_fusions: 'fuziuni',
+        zen_goal_perfect: 'lovituri perfecte',
+        zen_goal_matches: 'potriviri',
+        zen_harmony: 'ARMONIE ZEN!',
         sector_inf: 'Orizont Infinit ∞'
     },
     en: {
@@ -302,6 +321,15 @@ const I18N = {
         sector_3: 'Nebula Vortex',
         sector_4: 'Quantum Pulsar',
         sector_5: 'Stellar Storm',
+                pause_quit_btn: 'END MISSION',
+        go_home_btn: 'MAIN MENU',
+        set_rest_interval_label: 'Rest interval',
+        set_rest_interval_desc: 'Reminder to rest your eyes and mind.',
+        zen_goal_label: 'Zen Goal',
+        zen_goal_fusions: 'fusions',
+        zen_goal_perfect: 'perfect hits',
+        zen_goal_matches: 'matches',
+        zen_harmony: 'ZEN HARMONY!',
         sector_inf: 'Endless Horizon ∞'
     }
 };
@@ -951,6 +979,8 @@ function applyLanguage(lang, persist = true) {
     if (typeof updateShakeButtonUI === 'function') updateShakeButtonUI();
     if (typeof updateColorMarkersToggle === 'function') updateColorMarkersToggle();
     if (typeof setGameMode === 'function' && typeof gameMode !== 'undefined') setGameMode(gameMode);
+    if (typeof updateRestIntervalButtonUI === 'function') updateRestIntervalButtonUI();
+    if (typeof updateZenGoalHUD === 'function') updateZenGoalHUD();
     if (typeof updateHistoryUI === 'function') updateHistoryUI();
     if (typeof updateHUD === 'function' && typeof segments !== 'undefined' && segments.length > 0) updateHUD();
     renderBadgesGrid();
@@ -1267,8 +1297,35 @@ let screenShake = 0;
 let sessionElapsedSeconds = 0;
 let runPlayTimeSeconds = 0;
 let statsSaveAccumulator = 0;
-const REST_REMINDER_INTERVAL = 20 * 60; // 20 minutes in seconds (1200s)
-let nextRestReminderTime = REST_REMINDER_INTERVAL;
+const REST_INTERVAL_OPTIONS = [10, 15, 20, 25];
+let restIntervalMinutes = 20;
+try {
+    const savedRest = localStorage.getItem('orbit_fusion_rest_interval');
+    if (savedRest && REST_INTERVAL_OPTIONS.includes(Number(savedRest))) {
+        restIntervalMinutes = Number(savedRest);
+    }
+} catch (_) {}
+
+function getRestReminderInterval() {
+    return restIntervalMinutes * 60;
+}
+let nextRestReminderTime = getRestReminderInterval();
+
+function applyRestInterval(minutes) {
+    restIntervalMinutes = minutes;
+    try {
+        localStorage.setItem('orbit_fusion_rest_interval', String(minutes));
+    } catch (_) {}
+    nextRestReminderTime = sessionElapsedSeconds + getRestReminderInterval();
+    updateRestIntervalButtonUI();
+}
+
+function updateRestIntervalButtonUI() {
+    const btn = document.getElementById('rest-interval-toggle');
+    if (btn) {
+        btn.innerText = `${restIntervalMinutes} MIN`;
+    }
+}
 
 // Zen / Flow Mode State ('classic' or 'zen')
 let gameMode = 'classic';
@@ -1527,10 +1584,76 @@ function registerComboHit(bonusCount = 1) {
     checkBadgesAndThemes();
 }
 
+
+// ==========================================================================
+// ZEN MINI-GOALS SYSTEM (Relaxed flow-state micro-milestones)
+// ==========================================================================
+let zenGoal = {
+    type: 'fusions',
+    target: 2,
+    progress: 0
+};
+
+function generateZenGoal() {
+    const templates = [
+        { type: 'matches', target: 6 },
+        { type: 'fusions', target: 2 },
+        { type: 'perfect', target: 3 },
+        { type: 'matches', target: 10 },
+        { type: 'fusions', target: 3 },
+        { type: 'perfect', target: 4 }
+    ];
+    const picked = templates[Math.floor(Math.random() * templates.length)];
+    zenGoal = { type: picked.type, target: picked.target, progress: 0 };
+    updateZenGoalHUD();
+}
+
+function updateZenGoalHUD() {
+    const pill = document.getElementById('zen-goal-pill');
+    const textEl = document.getElementById('zen-goal-text');
+    if (!pill || !textEl) return;
+
+    if (gameMode !== 'zen' || gameState !== 'playing') {
+        pill.classList.add('hidden');
+        return;
+    }
+
+    pill.classList.remove('hidden');
+    let label = t('zen_goal_matches');
+    if (zenGoal.type === 'fusions') label = t('zen_goal_fusions');
+    else if (zenGoal.type === 'perfect') label = t('zen_goal_perfect');
+
+    textEl.innerText = `${t('zen_goal_label')}: ${zenGoal.target} ${label} (${zenGoal.progress}/${zenGoal.target})`;
+}
+
+function progressZenGoal(type, amount = 1) {
+    if (gameMode !== 'zen' || gameState !== 'playing') return;
+    if (zenGoal.type === type) {
+        zenGoal.progress += amount;
+        if (zenGoal.progress >= zenGoal.target) {
+            completeZenGoal();
+        } else {
+            updateZenGoalHUD();
+        }
+    }
+}
+
+function completeZenGoal() {
+    soundManager.playLevelUp();
+    triggerHaptic([30, 20, 40]);
+    const bonus = 160 * level;
+    score += bonus;
+    addXP(35);
+    floatingTexts.push(new FloatingText(0, -hexRadius * 1.45, `🌸 ${t('zen_harmony')} +${bonus}!`, isLightTheme() ? '#047857' : '#34d399'));
+    generateZenGoal();
+}
+
 function resetCombo() {
     comboCount = 0;
     comboTimer = 0;
     comboMultiplier = 1;
+    const cBar = document.getElementById('combo-timer-bar');
+    if (cBar) cBar.style.transform = 'scaleX(0)';
     updateComboHUD();
 }
 
@@ -1554,8 +1677,13 @@ function updateComboHUD() {
         badge.style.animation = 'none';
         badge.offsetHeight; // force reflow
         badge.style.animation = null;
+
+        const timerTrack = document.getElementById('combo-timer-track');
+        if (timerTrack) timerTrack.classList.remove('hidden');
     } else {
         badge.classList.add('hidden');
+        const timerTrack = document.getElementById('combo-timer-track');
+        if (timerTrack) timerTrack.classList.add('hidden');
     }
 }
 
@@ -1708,17 +1836,76 @@ function drawBackground() {
 let colorMarkersEnabled = false;
 try { colorMarkersEnabled = localStorage.getItem('orbit_fusion_color_markers') === 'true'; } catch (_) {}
 
+// Dedicated geometric shapes for enhanced colorblindness accessibility
+function drawColorShape(ctx, x, y, r, shapeIndex, fillColor, strokeColor, lineWidth = 1.2) {
+    ctx.save();
+    ctx.beginPath();
+    
+    if (shapeIndex === 0) {
+        // Circle (Cyan)
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+    } else if (shapeIndex === 1) {
+        // Square (Magenta)
+        ctx.rect(x - r * 0.85, y - r * 0.85, r * 1.7, r * 1.7);
+    } else if (shapeIndex === 2) {
+        // Triangle pointing up (Solar Yellow)
+        const h = r * 1.1;
+        ctx.moveTo(x, y - h);
+        ctx.lineTo(x + r * 0.95, y + h * 0.65);
+        ctx.lineTo(x - r * 0.95, y + h * 0.65);
+        ctx.closePath();
+    } else if (shapeIndex === 3) {
+        // Plus / Cross (Emerald Green)
+        const barW = r * 0.45;
+        const arm = r * 0.95;
+        ctx.rect(x - barW / 2, y - arm, barW, arm * 2);
+        ctx.rect(x - arm, y - barW / 2, arm * 2, barW);
+    } else if (shapeIndex === 4) {
+        // Diamond (Violet)
+        const d = r * 1.05;
+        ctx.moveTo(x, y - d);
+        ctx.lineTo(x + d, y);
+        ctx.lineTo(x, y + d);
+        ctx.lineTo(x - d, y);
+        ctx.closePath();
+    } else {
+        // Star (Nova / Index 5)
+        const spikes = 5;
+        const outerR = r * 1.1;
+        const innerR = r * 0.48;
+        let rot = (Math.PI / 2) * 3;
+        let step = Math.PI / spikes;
+        ctx.moveTo(x, y - outerR);
+        for (let s = 0; s < spikes; s++) {
+            let cx = x + Math.cos(rot) * outerR;
+            let cy = y + Math.sin(rot) * outerR;
+            ctx.lineTo(cx, cy);
+            rot += step;
+            cx = x + Math.cos(rot) * innerR;
+            cy = y + Math.sin(rot) * innerR;
+            ctx.lineTo(cx, cy);
+            rot += step;
+        }
+        ctx.closePath();
+    }
+
+    if (fillColor) {
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+    }
+    if (strokeColor && lineWidth > 0) {
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
+    }
+    ctx.restore();
+}
+
 function drawOrbColorMarker(drawContext, x, y, colorIndex) {
     if (!colorMarkersEnabled) return;
-    drawContext.save();
-    drawContext.globalAlpha = 0.92;
-    drawContext.shadowBlur = 0;
-    drawContext.fillStyle = '#050508';
-    drawContext.font = '800 7.5px "Plus Jakarta Sans", sans-serif';
-    drawContext.textAlign = 'center';
-    drawContext.textBaseline = 'middle';
-    drawContext.fillText(String(colorIndex + 1), x, y);
-    drawContext.restore();
+    const isLight = isLightTheme();
+    const symbolColor = isLight ? '#0f172a' : '#ffffff';
+    drawColorShape(drawContext, x, y, 4.2, colorIndex, symbolColor, isLight ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)', 0.8);
 }
 
 function drawSegmentColorMarker(drawContext, x, y, colorIndex) {
@@ -1726,21 +1913,17 @@ function drawSegmentColorMarker(drawContext, x, y, colorIndex) {
     const isLight = isLightTheme() || currentTheme === 'light_ether';
     const segColor = (COLORS[colorIndex] && COLORS[colorIndex].hex) || '#22d3ee';
     drawContext.save();
-    drawContext.globalAlpha = 0.92;
+    drawContext.globalAlpha = 0.95;
     drawContext.shadowBlur = 0;
     drawContext.setLineDash([]);
     drawContext.beginPath();
-    drawContext.arc(x, y, 7, 0, Math.PI * 2);
-    drawContext.fillStyle = isLight ? 'rgba(255, 255, 255, 0.94)' : 'rgba(6, 9, 19, 0.90)';
+    drawContext.arc(x, y, 8, 0, Math.PI * 2);
+    drawContext.fillStyle = isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(6, 9, 19, 0.92)';
     drawContext.fill();
-    drawContext.lineWidth = 1.2;
+    drawContext.lineWidth = 1.4;
     drawContext.strokeStyle = segColor;
     drawContext.stroke();
-    drawContext.fillStyle = isLight ? '#0f172a' : '#f8fafc';
-    drawContext.font = '800 8.5px "Plus Jakarta Sans", sans-serif';
-    drawContext.textAlign = 'center';
-    drawContext.textBaseline = 'middle';
-    drawContext.fillText(String(colorIndex + 1), x, y);
+    drawColorShape(drawContext, x, y, 4.6, colorIndex, segColor, isLight ? '#0f172a' : '#ffffff', 0.6);
     drawContext.restore();
 }
 
@@ -2045,20 +2228,28 @@ function updateHUD() {
 // ==========================================================================
 
 function checkCollisions() {
-    const checkRadiusMin = hexRadius - 11;
-    const checkRadiusMax = hexRadius + 11;
-
     for (let i = orbs.length - 1; i >= 0; i--) {
         const orb = orbs[i];
         
-        // If orb reaches the hexagon boundary
-        if (orb.distance >= checkRadiusMin && orb.distance <= checkRadiusMax) {
-            let relAngle = (orb.angle - hexAngle) % (Math.PI * 2);
-            if (relAngle < 0) relAngle += Math.PI * 2;
+        let relAngle = (orb.angle - hexAngle) % (Math.PI * 2);
+        if (relAngle < 0) relAngle += Math.PI * 2;
 
-            // 6 segments, each spans 60 degrees (PI / 3 radians)
-            const segmentIndex = Math.floor(relAngle / (Math.PI / 3)) % 6;
-            
+        // 6 segments, each spans 60 degrees (PI / 3 radians)
+        const segmentIndex = Math.floor(relAngle / (Math.PI / 3)) % 6;
+        
+        // Exact perpendicular and radial distance to the flat hexagon side chord:
+        // Segment center is at (segmentIndex + 0.5) * (Math.PI / 3)
+        const segCenterAngle = (segmentIndex + 0.5) * (Math.PI / 3);
+        let deltaAngle = Math.abs(relAngle - segCenterAngle);
+        if (deltaAngle > Math.PI) deltaAngle = Math.PI * 2 - deltaAngle;
+        
+        // r(deltaAngle) = hexRadius * cos(30 deg) / cos(deltaAngle)
+        const exactHexDist = (Math.sqrt(3) / 2) * hexRadius / Math.cos(deltaAngle);
+        const checkRadiusMin = exactHexDist - 12;
+        const checkRadiusMax = exactHexDist + 11;
+
+        // If orb reaches the hexagon boundary (pixel-perfect along flat edge)
+        if (orb.distance >= checkRadiusMin && orb.distance <= checkRadiusMax) {
             handleOrbImpact(orb, segmentIndex, i);
         } 
         // If the orb bypasses the shield completely and hits the central core
@@ -2127,6 +2318,9 @@ function handleOrbImpact(orb, segIdx, orbIdx) {
         // MATCH! Color matches (or Prismatic Wildcard) - extend combo streak
         runSuccessfulMatches++;
         registerComboHit(isPrism ? 2 : 1);
+        triggerHaptic(isPerfect ? 18 : 10);
+        progressZenGoal('matches');
+        if (isPerfect) progressZenGoal('perfect');
 
         const matchedColorHex = COLORS[segment.colorIndex] ? COLORS[segment.colorIndex].hex : COLORS[0].hex;
 
@@ -2221,6 +2415,7 @@ function handleOrbImpact(orb, segIdx, orbIdx) {
 
         if (gameMode === 'zen') {
             // Gentle deflection in Zen mode without harsh penalties
+            triggerHaptic(8);
             segment.pulse = 0.92;
             floatingTexts.push(new FloatingText(px, py, t('float_zen_deflect'), isLightTheme() ? '#64748b' : '#94a3b8'));
             orbs.splice(orbIdx, 1);
@@ -2228,6 +2423,7 @@ function handleOrbImpact(orb, segIdx, orbIdx) {
             return;
         }
 
+        triggerHaptic([45, 30, 45]);
         resetCombo();
         screenShake = 14;
         
@@ -2291,6 +2487,8 @@ function checkFusions(originIdx) {
                 
                 // Add to combo streak for fusion
                 registerComboHit(2);
+                triggerHaptic([24, 20, 28]);
+                progressZenGoal('fusions');
 
                 // Segment L gets upgraded & healed
                 segL.colorIndex = Math.min(COLORS.length - 1, segL.colorIndex + 1);
@@ -2358,6 +2556,7 @@ function checkFusions(originIdx) {
 function triggerNovaBlast(segIdx) {
     // Nova blast clears all active orbs on the screen, heals core & repairs all segments
     soundManager.playFusion(comboMultiplier);
+    triggerHaptic([40, 25, 70]);
     const blastColor = isLightTheme() ? '#7c3aed' : '#38bdf8';
     shockwaves.push(new Shockwave(0, 0, Math.max(window.innerWidth, window.innerHeight) * 0.48, blastColor));
     
@@ -2972,9 +3171,14 @@ function update(dt) {
         checkBadgesAndThemes();
     }
 
-    // Combo timer countdown
+    // Combo timer countdown with visual decay bar
     if (comboTimer > 0) {
         comboTimer -= dt;
+        const comboRatio = Math.max(0, Math.min(1, comboTimer / COMBO_WINDOW));
+        const cBar = document.getElementById('combo-timer-bar');
+        if (cBar) {
+            cBar.style.transform = `scaleX(${comboRatio.toFixed(3)})`;
+        }
         if (comboTimer <= 0) {
             resetCombo();
         }
@@ -3040,6 +3244,18 @@ function draw() {
         ctx.translate(window.innerWidth / 2 + dx, window.innerHeight / 2 + dy);
     } else {
         ctx.translate(window.innerWidth / 2, window.innerHeight / 2);
+    }
+
+    // Danger Vignette for low stability (critical accessibility cue for muted / deaf players)
+    if (gameState === 'playing' && gameMode === 'classic' && stability < 25) {
+        const dangerPulse = (1 - stability / 25) * (0.42 + Math.sin(performance.now() * 0.007) * 0.22);
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const dangerGrad = ctx.createRadialGradient(0, 0, Math.min(w, h) * 0.32, 0, 0, Math.max(w, h) * 0.75);
+        dangerGrad.addColorStop(0, 'rgba(239, 68, 68, 0)');
+        dangerGrad.addColorStop(1, `rgba(239, 68, 68, ${dangerPulse.toFixed(3)})`);
+        ctx.fillStyle = dangerGrad;
+        ctx.fillRect(-w / 2, -h / 2, w, h);
     }
 
     drawBackground();
@@ -3179,6 +3395,15 @@ function handlePointerStart(clientX, clientY, target) {
 
 function handlePointerMove(clientX, clientY, target) {
     if (!isInputActive || gameState !== 'playing') return;
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const distFromCenter = Math.hypot(clientX - centerX, clientY - centerY);
+
+    // Deadzone: ignore pointer if within center core to avoid wild angular acceleration
+    if (distFromCenter < Math.max(44, hexRadius * 0.44)) {
+        return;
+    }
 
     const distMoved = Math.hypot(clientX - dragStartX, clientY - dragStartY);
     if (distMoved > 8) {
@@ -3489,6 +3714,49 @@ if (modeToggleBtn) {
     });
 }
 
+
+// End current mission action (accessible from Pause screen)
+function endCurrentMission() {
+    if (gameState !== 'paused' && gameState !== 'playing') return;
+    const pauseScreen = document.getElementById('pause-screen');
+    if (pauseScreen) pauseScreen.classList.add('hidden');
+    gameOver();
+}
+
+const pauseQuitBtn = document.getElementById('pause-quit-btn');
+if (pauseQuitBtn) {
+    pauseQuitBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundManager.init();
+        endCurrentMission();
+    });
+}
+
+const goHomeBtn = document.getElementById('go-home-btn');
+if (goHomeBtn) {
+    goHomeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundManager.init();
+        document.getElementById('game-over-screen').classList.add('hidden');
+        document.getElementById('start-screen').classList.remove('hidden');
+        initGame(false);
+        gameState = 'start';
+        updateHistoryUI();
+        document.getElementById('best-score-val').innerText = highScore;
+    });
+}
+
+const restIntervalToggle = document.getElementById('rest-interval-toggle');
+if (restIntervalToggle) {
+    restIntervalToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundManager.init();
+        const currIdx = REST_INTERVAL_OPTIONS.indexOf(restIntervalMinutes);
+        const nextIdx = (currIdx + 1) % REST_INTERVAL_OPTIONS.length;
+        applyRestInterval(REST_INTERVAL_OPTIONS[nextIdx]);
+    });
+}
+
 // Start engine
 let resizeFrame = null;
 window.addEventListener('resize', () => {
@@ -3508,6 +3776,9 @@ checkBadgesAndThemes();
 
 // Detect and apply saved game mode
 setGameMode(gameMode);
+generateZenGoal();
+if (typeof updateRestIntervalButtonUI === 'function') updateRestIntervalButtonUI();
+if (typeof updateZenGoalHUD === 'function') updateZenGoalHUD();
 
 // Prepare the visual state without counting a mission before the player presses Start.
 initGame(false);

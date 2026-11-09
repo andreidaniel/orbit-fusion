@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.webmanifest">
-    <link rel="stylesheet" href="style.css?v=2.6">
+    <link rel="stylesheet" href="style.css?v=3.0">
     <script>
         // Mesaj de recuperare prietenos; detaliile tehnice rămân doar în consolă.
         window.onerror = function(message, source, lineno, colno, error) {
@@ -53,7 +53,12 @@
             <div class="hud-item score-container">
                 <span class="hud-label" data-i18n="hud_score">SCOR</span>
                 <span id="score-val" class="hud-value neon-cyan">0</span>
-                <span id="combo-badge" class="combo-badge hidden">x1</span>
+                <div class="combo-wrapper">
+                    <span id="combo-badge" class="combo-badge hidden">x1</span>
+                    <div id="combo-timer-track" class="combo-timer-track hidden">
+                        <div id="combo-timer-bar" class="combo-timer-bar"></div>
+                    </div>
+                </div>
             </div>
             
             <div class="hud-item level-container">
@@ -62,6 +67,10 @@
                     <span id="level-val" class="hud-value neon-magenta">1</span>
                 </div>
                 <span id="sector-badge" class="sector-pill">S1 · ∞</span>
+                <div id="zen-goal-pill" class="zen-goal-pill hidden" aria-label="Misiune Zen">
+                    <span class="zen-goal-icon">🎯</span>
+                    <span id="zen-goal-text">3 Fuziuni (0/3)</span>
+                </div>
                 <div class="xp-bar-container">
                     <div id="xp-bar-fill" class="xp-bar-fill"></div>
                 </div>
@@ -105,11 +114,15 @@
 
         <div id="touch-controls" class="touch-controls" aria-label="Comenzi de rotire">
             <button id="rotate-left-btn" class="touch-control-btn" aria-label="Rotește spre stânga">
-                <span class="touch-key" aria-hidden="true">A</span>
+                <svg class="touch-rotate-icon" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+                    <path fill="currentColor" d="M12.5,3C17.15,3 21.08,6.03 22.47,10.22L20.1,11C19.05,7.81 16.04,5.5 12.5,5.5C10.54,5.5 8.77,6.22 7.38,7.38L10,10H3V3L5.6,5.6C7.45,4 9.85,3 12.5,3Z"/>
+                </svg>
                 <span class="touch-label" data-i18n="touch_left">STÂNGA</span>
             </button>
             <button id="rotate-right-btn" class="touch-control-btn" aria-label="Rotește spre dreapta">
-                <span class="touch-key" aria-hidden="true">D</span>
+                <svg class="touch-rotate-icon" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+                    <path fill="currentColor" d="M11.5,3C6.85,3 2.92,6.03 1.53,10.22L3.9,11C4.95,7.81 7.96,5.5 11.5,5.5C13.46,5.5 15.23,6.22 16.62,7.38L14,10H21V3L18.4,5.6C16.55,4 14.15,3 11.5,3Z"/>
+                </svg>
                 <span class="touch-label" data-i18n="touch_right">DREAPTA</span>
             </button>
         </div>
@@ -251,6 +264,7 @@
                 <div id="new-high-score-badge" class="high-score-badge hidden" data-i18n="new_high_score">NOU RECORD!</div>
 
                 <button id="restart-btn" class="action-btn restart-btn" data-i18n="restart_btn">CONTINUĂ CĂLĂTORIA</button>
+                <button id="go-home-btn" class="sub-action-btn go-home-btn" data-i18n="go_home_btn">MENIU PRINCIPAL</button>
             </div>
         </div>
 
@@ -280,6 +294,10 @@
                     <div class="setting-row">
                         <div class="setting-copy"><span class="setting-label" data-i18n="set_shake_label">Tremurul ecranului</span><span class="setting-description" data-i18n="set_shake_desc">Alege intensitatea efectului la impact.</span></div>
                         <button id="shake-toggle-btn" class="setting-btn" aria-label="Schimbă intensitatea vibrației ecranului">INTENS</button>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-copy"><span class="setting-label" data-i18n="set_rest_interval_label">Interval pauză</span><span class="setting-description" data-i18n="set_rest_interval_desc">Memento de relaxare ochi și minte.</span></div>
+                        <button id="rest-interval-toggle" class="setting-btn" aria-label="Schimbă intervalul de pauză">20 MIN</button>
                     </div>
                     <div class="setting-row">
                         <div class="setting-copy"><span class="setting-label" data-i18n="set_theme_label">Aspectul jocului</span><span class="setting-description" data-i18n="set_theme_desc">Alege fundalul și paleta de culori.</span></div>
@@ -314,6 +332,7 @@
                 
                 <label class="music-setting"><span data-i18n="music_label">Muzică cosmică</span> <input class="music-volume" type="range" min="0" max="100" value="22" aria-label="Volum muzică în pauză; zero oprește muzica"><span data-i18n="music_off_hint">0 = oprit</span></label>
                 <button id="resume-btn" class="action-btn" data-i18n="resume_btn">CONTINUĂ</button>
+                <button id="pause-quit-btn" class="sub-action-btn pause-quit-btn" data-i18n="pause_quit_btn">ÎNCHEIE MISIUNEA</button>
             </div>
         </div>
 
@@ -401,6 +420,6 @@
     </div>
 
     <noscript>Orbit Fusion are nevoie de JavaScript activat pentru a rula. / Orbit Fusion requires JavaScript to run.</noscript>
-    <script src="app.js?v=2.6"></script>
+    <script src="app.js?v=3.0"></script>
 </body>
 </html>

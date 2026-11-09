@@ -3740,3 +3740,120 @@ body.light-theme .start-panel .stats-box {
         text-align: center;
     }
 }
+
+/* ==========================================================================
+   ENHANCEMENTS: COMBO DECAY, ZEN GOALS, TOUCH ICONS, QUIT & HOME BUTTONS
+   ========================================================================== */
+
+.combo-wrapper {
+    position: absolute;
+    right: -10px;
+    top: -12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    pointer-events: none;
+}
+
+.combo-wrapper .combo-badge {
+    position: static;
+    margin: 0;
+}
+
+.combo-timer-track {
+    width: 60px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+.combo-timer-bar {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #22d3ee, #f43f85);
+    border-radius: 999px;
+    transform-origin: left;
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.85);
+}
+
+.zen-goal-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(52, 211, 153, 0.16);
+    border: 1px solid rgba(52, 211, 153, 0.45);
+    color: #34d399;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.2);
+    transition: all 0.3s ease;
+    animation: gentle-fade-in 0.3s ease;
+}
+
+body.light-theme .zen-goal-pill {
+    background: rgba(4, 120, 87, 0.12);
+    border-color: rgba(4, 120, 87, 0.38);
+    color: #047857;
+}
+
+.touch-rotate-icon {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--cyan);
+    transition: transform 0.15s ease;
+}
+
+.touch-control-btn:last-child .touch-rotate-icon {
+    color: var(--magenta);
+}
+
+.touch-control-btn:active .touch-rotate-icon,
+.touch-control-btn.is-active .touch-rotate-icon {
+    transform: scale(1.18);
+}
+
+.pause-quit-btn {
+    margin-top: 10px;
+    background: rgba(239, 68, 68, 0.14);
+    border: 1px solid rgba(239, 68, 68, 0.38);
+    color: #fca5a5;
+    font-weight: 700;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pause-quit-btn:hover {
+    background: rgba(239, 68, 68, 0.28);
+    border-color: rgba(239, 68, 68, 0.75);
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.45);
+}
+
+body.light-theme .pause-quit-btn {
+    background: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.32);
+    color: #dc2626;
+}
+
+body.light-theme .pause-quit-btn:hover {
+    background: rgba(220, 38, 38, 0.2);
+    color: #991b1b;
+}
+
+.go-home-btn {
+    margin-top: 10px;
+    width: 100%;
+}
+
+@keyframes gentle-fade-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
